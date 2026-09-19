@@ -1,1 +1,38 @@
-<tamplate></tamplate>
+<tamplate></tamplate
+><template>
+  <div class="page" data-name="home">
+    <div class="navbar">
+      <div class="navbar-bg"></div>
+      <div class="navbar-inner">
+        <div class="title">Dashboard Petugas</div>
+      </div>
+    </div>
+
+    <div class="page-content">
+      <div class="block block-strong">
+        <p>Selamat Datang, <b>${namaPetugas}</b>!</p>
+        <button type="button" class="button button-fill button-danger" @click="${keluarAkun}">Keluar / Logout</button>
+      </div>
+    </div>
+  </div>
+</template>
+
+<script>
+  export default (props, { $f7 }) => {
+    const namaPetugas = localStorage.getItem("petugas_nama") || "Petugas";
+
+    // Fungsi untuk logout
+    const keluarAkun = () => {
+      $f7.dialog.confirm("Apakah Anda yakin ingin keluar?", "Konfirmasi", () => {
+        localStorage.removeItem("petugas_login");
+        localStorage.removeItem("petugas_nama");
+
+        $f7.views.main.router.navigate("/login/", {
+          clearPreviousHistory: true,
+        });
+      });
+    };
+
+    return $render;
+  };
+</script>

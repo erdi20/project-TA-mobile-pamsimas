@@ -1,0 +1,95 @@
+<template>
+  <div class="page" data-name="login">
+    <div class="page-content login-screen-content">
+      <div class="login-screen-title" style="margin-top: 40px; font-weight: bold">LOGIN PETUGAS</div>
+
+      <form id="form-login">
+        <div class="list inline-labels no-hairlines-md">
+          <ul>
+            <li class="item-content item-input">
+              <div class="item-inner">
+                <div class="item-title item-label">Username</div>
+                <div class="item-input-wrap">
+                  <input type="text" id="input-username" placeholder="Masukkan Username" required />
+                  <span class="input-clear-button"></span>
+                </div>
+              </div>
+            </li>
+            <li class="item-content item-input">
+              <div class="item-inner">
+                <div class="item-title item-label">Password</div>
+                <div class="item-input-wrap">
+                  <input type="password" id="input-password" placeholder="Masukkan Password" required />
+                  <span class="input-clear-button"></span>
+                </div>
+              </div>
+            </li>
+          </ul>
+        </div>
+
+        <div class="block margin-top">
+          <button type="button" class="button button-fill button-large" @click="${prosesLogin}">Masuk</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</template>
+
+<script>
+  export default (props, { $f7 }) => {
+    const prosesLogin = () => {
+      const username = document.getElementById("input-username").value.trim();
+      const password = document.getElementById("input-password").value.trim();
+
+      if (!username || !password) {
+        $f7.dialog.alert("Username dan Password wajib diisi!", "Peringatan");
+        return;
+      }
+
+      // Memunculkan loading indikator
+      $f7.dialog.preloader("Memproses Login...");
+
+      // Menggunakan fetch API Javascript (Paling aman & anti-error)
+      fetch("https://webinformasi.full.diskon.cloud/api/apipetugas/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+        },
+        body: JSON.stringify({
+          username: username,
+          password: password,
+        }),
+      })
+        .then((response) => response.json()) // Ubah response dari server jadi Object JSON
+        .then((res) => {
+          $f7.dialog.close(); // Tutup loading
+
+          if (res.status === true) {
+            // Simpan data ke LocalStorage
+            localStorage.setItem("petugas_login", "true");
+
+            if (res.data) {
+              localStorage.setItem("petugas_id", res.data.id_petugas);
+              localStorage.setItem("petugas_nama", res.data.nama);
+            }
+
+            // Pindah ke halaman Home
+            $f7.views.main.router.navigate("/home/", {
+              clearPreviousHistory: true, // Cegah user kembali ke halaman login
+            });
+          } else {
+            // Jika password salah / user tidak aktif
+            $f7.dialog.alert(res.pesan, "Gagal Login");
+          }
+        })
+        .catch((error) => {
+          $f7.dialog.close(); // Tutup loading
+          console.error("Error Request:", error);
+          $f7.dialog.alert("Gagal terhubung ke server! Pastikan internet stabil dan URL API benar.", "Koneksi Error");
+        });
+    };
+
+    return $render;
+  };
+</script>
