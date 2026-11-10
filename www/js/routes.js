@@ -25,6 +25,11 @@ var routes = [
     name: "home",
   },
   {
+    path: "/penanganan/",
+    componentUrl: "pages/penanganan.html", // Gunakan componentUrl
+    name: "penanganan",
+  },
+  {
     path: "/about/",
     componentUrl: "pages/about.html", // Gunakan componentUrl
     name: "about",

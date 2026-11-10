@@ -1,0 +1,400 @@
+<template>
+  <div class="page bg-color-white" data-name="penanganan">
+    <style>
+      .leaflet-routing-container {
+        display: none !important;
+      }
+      .gps-marker-petugas {
+        background-color: #4285f4;
+        border: 3px solid #ffffff;
+        border-radius: 50%;
+        box-shadow: 0 0 0 0 rgba(66, 133, 244, 0.7);
+        animation: pulse-gps 1.5s infinite;
+      }
+      @keyframes pulse-gps {
+        0% {
+          box-shadow: 0 0 0 0 rgba(66, 133, 244, 0.7);
+        }
+        70% {
+          box-shadow: 0 0 0 15px rgba(66, 133, 244, 0);
+        }
+        100% {
+          box-shadow: 0 0 0 0 rgba(66, 133, 244, 0);
+        }
+      }
+      .grid-kamera {
+        display: flex;
+        gap: 12px;
+        justify-content: space-between;
+      }
+      .kotak-kamera {
+        flex: 1;
+        aspect-ratio: 1 / 1;
+        background: #f4f5f7;
+        border: 2px dashed #c1c7d0;
+        border-radius: 12px;
+        position: relative;
+        overflow: hidden;
+      }
+      .isi-kamera {
+        width: 100%;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        position: relative;
+      }
+    </style>
+
+    <a href="#" class="link back elevation-3" @click="kembaliKeHome" style="position: absolute; top: 40px; left: 16px; z-index: 999; background: white; width: 44px; height: 44px; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #1c1c1e">
+      <i class="icon f7-icons size-20">arrow_left</i>
+    </a>
+
+    <div class="page-content" style="padding: 0; height: 100vh; position: relative">
+      <div id="map-penanganan" style="width: 100%; height: 100%; z-index: 1"></div>
+
+      <a href="#" @click="fokusKePetugas" class="elevation-3" style="position: absolute; top: 100px; right: 16px; z-index: 999; background: white; width: 44px; height: 44px; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #4285f4">
+        <i class="icon f7-icons size-22">location_fill</i>
+      </a>
+
+      <div class="elevation-4" style="position: absolute; bottom: 30px; left: 16px; right: 16px; z-index: 10; border-radius: 20px; background: #ffffff; padding: 20px">
+        <div style="display: flex; align-items: center; margin-bottom: 16px">
+          <div style="width: 48px; height: 48px; background: #ffedea; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-right: 16px">
+            <i class="icon f7-icons color-red size-24">placemark_fill</i>
+          </div>
+          <div style="flex: 1; overflow: hidden">
+            <div class="font-weight-bold size-14 text-color-gray" style="text-transform: uppercase; letter-spacing: 0.5px">Tujuan Anda</div>
+            <div class="font-weight-bold size-18 text-color-black" id="label-kategori" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis">...</div>
+            <div class="size-13 text-color-gray margin-top-xs" id="label-lokasi" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis">Mencari lokasi...</div>
+          </div>
+        </div>
+        <button class="button button-fill button-large color-blue elevation-2 popup-open" data-popup="#popup-form-tugas" style="border-radius: 14px; font-weight: 700; font-size: 16px; width: 100%; height: 50px">Eksekusi</button>
+      </div>
+    </div>
+
+    <div class="popup" id="popup-form-tugas" style="background: #f4f5f7">
+      <div class="view">
+        <div class="page">
+          <div class="navbar" style="background: white; box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05)">
+            <div class="navbar-bg" style="background: transparent"></div>
+            <div class="navbar-inner">
+              <div class="title" style="font-weight: 700; color: #1c1c1e">Form Pekerjaan</div>
+              <div class="right">
+                <a href="#" class="link popup-close" style="color: #1c1c1e"><i class="icon f7-icons">multiply_circle_fill</i></a>
+              </div>
+            </div>
+          </div>
+
+          <div class="page-content padding-bottom-large">
+            <div class="card margin-top margin-horizontal" style="border-radius: 16px; border: none; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04)">
+              <div class="card-content card-content-padding">
+                <div class="font-weight-600 size-14 margin-bottom-half">Foto Laporan Pelapor:</div>
+                <img id="foto-pelapor" src="" style="width: 100%; height: 180px; object-fit: cover; border-radius: 12px; background: #eee" />
+                <div class="margin-top text-color-gray size-13 font-italic" style="background: #f8f9fa; padding: 10px; border-radius: 8px; border-left: 3px solid #1a73e8">"<span id="teks-deskripsi"></span>"</div>
+              </div>
+            </div>
+
+            <div class="block-title font-weight-bold color-black margin-top">Bukti Pengerjaan</div>
+            <div class="block margin-bottom">
+              <div class="grid-kamera">
+                <div class="kotak-kamera elevation-1">
+                  <div class="isi-kamera" @click="${() => interaksiKamera('foto0')}">
+                    <i id="icon-foto0" class="icon f7-icons size-28 color-gray">camera_viewfinder</i>
+                    <div id="label-foto0" class="size-11 font-weight-600 text-color-gray margin-top-xs">0%</div>
+                    <img id="preview-foto0" src="" style="width: 100%; height: 100%; object-fit: cover; position: absolute; top: 0; left: 0; display: none" />
+                  </div>
+                  <a href="#" id="retake-foto0" @click="${() => bukaKamera('foto0')}" style="position: absolute; top: 6px; right: 6px; background: #ef4444; width: 28px; height: 28px; border-radius: 50%; display: none; align-items: center; justify-content: center; z-index: 10; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3)">
+                    <i class="icon f7-icons size-14 color-white">arrow_2_circlepath</i>
+                  </a>
+                </div>
+
+                <div class="kotak-kamera elevation-1">
+                  <div class="isi-kamera" @click="${() => interaksiKamera('foto50')}">
+                    <i id="icon-foto50" class="icon f7-icons size-28 color-gray">camera_viewfinder</i>
+                    <div id="label-foto50" class="size-11 font-weight-600 text-color-gray margin-top-xs">50%</div>
+                    <img id="preview-foto50" src="" style="width: 100%; height: 100%; object-fit: cover; position: absolute; top: 0; left: 0; display: none" />
+                  </div>
+                  <a href="#" id="retake-foto50" @click="${() => bukaKamera('foto50')}" style="position: absolute; top: 6px; right: 6px; background: #ef4444; width: 28px; height: 28px; border-radius: 50%; display: none; align-items: center; justify-content: center; z-index: 10; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3)">
+                    <i class="icon f7-icons size-14 color-white">arrow_2_circlepath</i>
+                  </a>
+                </div>
+
+                <div class="kotak-kamera elevation-1">
+                  <div class="isi-kamera" @click="${() => interaksiKamera('foto100')}">
+                    <i id="icon-foto100" class="icon f7-icons size-28 color-gray">camera_viewfinder</i>
+                    <div id="label-foto100" class="size-11 font-weight-600 text-color-gray margin-top-xs">100%</div>
+                    <img id="preview-foto100" src="" style="width: 100%; height: 100%; object-fit: cover; position: absolute; top: 0; left: 0; display: none" />
+                  </div>
+                  <a href="#" id="retake-foto100" @click="${() => bukaKamera('foto100')}" style="position: absolute; top: 6px; right: 6px; background: #ef4444; width: 28px; height: 28px; border-radius: 50%; display: none; align-items: center; justify-content: center; z-index: 10; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3)">
+                    <i class="icon f7-icons size-14 color-white">arrow_2_circlepath</i>
+                  </a>
+                </div>
+              </div>
+            </div>
+
+            <div class="block-title font-weight-bold color-black">Catatan Penanganan</div>
+            <div class="list inset no-hairlines-md margin-top-half" style="border-radius: 16px; overflow: hidden">
+              <ul>
+                <li class="item-content item-input">
+                  <div class="item-inner" style="padding-top: 8px; padding-bottom: 8px">
+                    <div class="item-input-wrap">
+                      <textarea id="catatan-petugas" class="resizable" placeholder="Ketik rincian perbaikan..." style="min-height: 100px; font-size: 14px"></textarea>
+                    </div>
+                  </div>
+                </li>
+              </ul>
+            </div>
+
+            <div class="block margin-top-large padding-bottom-large">
+              <button class="button button-fill button-large color-green elevation-3" style="border-radius: 14px; font-weight: 700; height: 54px" @click="${kirimHasil}">Kirim Selesai</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</template>
+
+<script>
+  export default (props, { $f7, $on }) => {
+    let dataLaporan = null;
+    let fotoBase64 = { foto0: "", foto50: "", foto100: "" };
+    let petaLeaflet = null;
+    let markerPetugas = null;
+    let watchId = null;
+    let lokasiSaatIni = null;
+
+    $on("pageInit", () => {
+      const dataString = localStorage.getItem("laporan_aktif");
+      if (dataString) {
+        dataLaporan = JSON.parse(dataString);
+
+        // PERUBAHAN: Disesuaikan dengan Key JSON baru
+        document.getElementById("label-kategori").innerText = dataLaporan.jenis;
+        document.getElementById("label-lokasi").innerText = `Pelapor: ${dataLaporan.nama} - ${dataLaporan.no_telp || ""}`;
+        document.getElementById("teks-deskripsi").innerText = dataLaporan.keterangan;
+        document.getElementById("foto-pelapor").src = "https://webinformasi.full.diskon.cloud/img_laporan/" + dataLaporan.foto;
+
+        memuatDrafProgress();
+
+        document.getElementById("catatan-petugas").addEventListener("input", (e) => {
+          localStorage.setItem(`draf_catatan_${dataLaporan.id}`, e.target.value);
+        });
+
+        setTimeout(() => initPetaLiveTracking(), 150);
+        document.addEventListener("backbutton", onBackKeyDown, false);
+      }
+    });
+
+    $on("pageBeforeRemove", () => {
+      if (watchId) navigator.geolocation.clearWatch(watchId);
+      document.removeEventListener("backbutton", onBackKeyDown, false);
+    });
+
+    const onBackKeyDown = (e) => {
+      e.preventDefault();
+      kembaliKeHome();
+    };
+    const kembaliKeHome = () => {
+      if (watchId) navigator.geolocation.clearWatch(watchId);
+      $f7.views.main.router.back("/home/", { force: true });
+    };
+
+    const memuatDrafProgress = () => {
+      const drafFoto = localStorage.getItem(`draf_foto_${dataLaporan.id}`);
+      if (drafFoto) {
+        fotoBase64 = JSON.parse(drafFoto);
+        if (fotoBase64.foto0) updateUIKamera("foto0", fotoBase64.foto0);
+        if (fotoBase64.foto50) updateUIKamera("foto50", fotoBase64.foto50);
+        if (fotoBase64.foto100) updateUIKamera("foto100", fotoBase64.foto100);
+      }
+      const drafCatatan = localStorage.getItem(`draf_catatan_${dataLaporan.id}`);
+      if (drafCatatan) document.getElementById("catatan-petugas").value = drafCatatan;
+    };
+
+    const updateUIKamera = (jenisFoto, base64Image) => {
+      document.getElementById(`preview-${jenisFoto}`).src = base64Image;
+      document.getElementById(`preview-${jenisFoto}`).style.display = "block";
+      document.getElementById(`icon-${jenisFoto}`).style.display = "none";
+      document.getElementById(`label-${jenisFoto}`).style.display = "none";
+      document.getElementById(`retake-${jenisFoto}`).style.display = "flex";
+      document.getElementById(`preview-${jenisFoto}`).closest(".kotak-kamera").style.border = "2px solid #34c759";
+    };
+
+    const interaksiKamera = (jenisFoto) => {
+      if (fotoBase64[jenisFoto]) {
+        let pb = $f7.photoBrowser.create({
+          photos: [fotoBase64[jenisFoto]],
+          theme: "dark",
+          toolbar: false,
+          navbar: true,
+          backLinkText: "Tutup",
+        });
+        pb.open();
+      } else {
+        bukaKamera(jenisFoto);
+      }
+    };
+
+    const initPetaLiveTracking = () => {
+      let latTarget = dataLaporan.latitude || -7.55;
+      let lngTarget = dataLaporan.longitude || 112.23;
+
+      petaLeaflet = L.map("map-penanganan", { zoomControl: false }).setView([latTarget, lngTarget], 15);
+      L.tileLayer("https://{s}.google.com/vt/lyrs=s,h&x={x}&y={y}&z={z}", { maxZoom: 20, subdomains: ["mt0", "mt1", "mt2", "mt3"] }).addTo(petaLeaflet);
+
+      let targetIcon = L.icon({
+        iconUrl: "https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-red.png",
+        shadowUrl: "https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png",
+        iconSize: [25, 41],
+        iconAnchor: [12, 41],
+      });
+      L.marker([latTarget, lngTarget], { icon: targetIcon }).addTo(petaLeaflet).bindPopup("Lokasi Tujuan").openPopup();
+
+      $f7.dialog.preloader("Mencari GPS...");
+      let iconPetugas = L.divIcon({ className: "gps-marker-petugas", iconSize: [20, 20], iconAnchor: [10, 10] });
+
+      watchId = navigator.geolocation.watchPosition(
+        (pos) => {
+          $f7.dialog.close();
+          lokasiSaatIni = [pos.coords.latitude, pos.coords.longitude];
+
+          if (!markerPetugas) {
+            markerPetugas = L.marker(lokasiSaatIni, { icon: iconPetugas }).addTo(petaLeaflet);
+            L.Routing.control({
+              waypoints: [L.latLng(lokasiSaatIni[0], lokasiSaatIni[1]), L.latLng(latTarget, lngTarget)],
+              routeWhileDragging: false,
+              addWaypoints: false,
+              show: false,
+              createMarker: () => null,
+            }).addTo(petaLeaflet);
+            let group = new L.featureGroup([markerPetugas, L.marker([latTarget, lngTarget])]);
+            petaLeaflet.fitBounds(group.getBounds(), { padding: [50, 50] });
+          } else {
+            markerPetugas.setLatLng(lokasiSaatIni);
+          }
+        },
+        (err) => {
+          $f7.dialog.close();
+          console.warn("GPS:", err);
+        },
+        { enableHighAccuracy: true, maximumAge: 0, timeout: 10000 },
+      );
+    };
+
+    const fokusKePetugas = () => {
+      if (petaLeaflet && lokasiSaatIni) petaLeaflet.setView(lokasiSaatIni, 17, { animate: true });
+      else $f7.dialog.toast("Sinyal GPS belum stabil", 2000);
+    };
+
+    const formatDMS = (lat, lng) => {
+      const convert = (val) => {
+        let abs = Math.abs(val);
+        let d = Math.floor(abs);
+        let m = Math.floor((abs - d) * 60);
+        let s = ((abs - d - m / 60) * 3600).toFixed(3);
+        return `${d}°${m}'${s}"`;
+      };
+      return `${convert(lat)}${lat >= 0 ? "N" : "S"} ${convert(lng)}${lng >= 0 ? "E" : "W"}`;
+    };
+
+    const pasangWatermark = (base64Ori) => {
+      return new Promise((resolve) => {
+        let img = new Image();
+        img.onload = () => {
+          let cvs = document.createElement("canvas");
+          let ctx = cvs.getContext("2d");
+          cvs.width = img.width;
+          cvs.height = img.height;
+          ctx.drawImage(img, 0, 0);
+
+          let tgl = new Date().toLocaleString("id-ID", { day: "2-digit", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit", second: "2-digit" });
+          let nama = localStorage.getItem("petugas_nama") || "PETUGAS LAPANGAN";
+          let kordinat = lokasiSaatIni ? formatDMS(lokasiSaatIni[0], lokasiSaatIni[1]) : "Mencari GPS...";
+
+          let fs = cvs.width * 0.032;
+          ctx.fillStyle = "rgba(0,0,0,0.5)";
+          ctx.fillRect(0, cvs.height - fs * 5.5, cvs.width, fs * 5.5);
+
+          ctx.font = `normal ${fs}px sans-serif`;
+          ctx.fillStyle = "#ffffff";
+          ctx.fillText(tgl, fs, cvs.height - fs * 3.8);
+          ctx.fillText(kordinat, fs, cvs.height - fs * 2.3);
+          ctx.fillText(`${dataLaporan.id} - ${nama}`, fs, cvs.height - fs * 0.8);
+
+          resolve(cvs.toDataURL("image/jpeg", 0.8));
+        };
+        img.src = base64Ori;
+      });
+    };
+
+    const bukaKamera = (jenisFoto) => {
+      if (!navigator.camera) return $f7.dialog.alert("Plugin kamera tidak terdeteksi.", "Error");
+
+      navigator.camera.getPicture(
+        (imageData) => {
+          let base64Ori = imageData.startsWith("data:image") ? imageData : "data:image/jpeg;base64," + imageData;
+
+          pasangWatermark(base64Ori).then((base64Watermark) => {
+            fotoBase64[jenisFoto] = base64Watermark;
+            localStorage.setItem(`draf_foto_${dataLaporan.id}`, JSON.stringify(fotoBase64));
+            updateUIKamera(jenisFoto, base64Watermark);
+          });
+        },
+        (err) => console.log("Kamera:", err),
+        { quality: 60, destinationType: Camera.DestinationType.DATA_URL, sourceType: Camera.PictureSourceType.CAMERA, encodingType: Camera.EncodingType.JPEG, targetWidth: 1000, targetHeight: 1000, correctOrientation: true, saveToPhotoAlbum: false },
+      );
+    };
+
+    const kirimHasil = () => {
+      const catatan = document.getElementById("catatan-petugas").value.trim();
+      const id_petugas = localStorage.getItem("petugas_id");
+
+      if (!fotoBase64.foto0 || !fotoBase64.foto50 || !fotoBase64.foto100) return $f7.dialog.alert("Semua foto wajib dilengkapi!", "Validasi");
+      if (!catatan) return $f7.dialog.alert("Catatan wajib diisi!", "Validasi");
+
+      $f7.dialog.confirm("Kirim data perbaikan? Data tidak dapat diubah setelah dikirim.", "Konfirmasi", () => {
+        $f7.dialog.preloader("Mengirim...");
+        navigator.geolocation.getCurrentPosition(
+          (pos) => eksekusiFetch(pos.coords.latitude, pos.coords.longitude),
+          () => eksekusiFetch(dataLaporan.latitude, dataLaporan.longitude),
+          { enableHighAccuracy: true, timeout: 5000 },
+        );
+      });
+
+      function eksekusiFetch(latSubmit, lngSubmit) {
+        fetch("https://webinformasi.full.diskon.cloud/api/apipetugas/submit_penanganan", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            id_laporan: dataLaporan.id,
+            id_petugas: id_petugas,
+            catatan: catatan,
+            foto0: fotoBase64.foto0,
+            foto50: fotoBase64.foto50,
+            foto100: fotoBase64.foto100,
+            latitude: latSubmit,
+            longitude: lngSubmit,
+          }),
+        })
+          .then((res) => res.json())
+          .then((res) => {
+            $f7.dialog.close();
+            if (res.status) {
+              localStorage.removeItem(`draf_foto_${dataLaporan.id}`);
+              localStorage.removeItem(`draf_catatan_${dataLaporan.id}`);
+              $f7.dialog.alert(res.pesan, "Berhasil", () => kembaliKeHome());
+            } else $f7.dialog.alert(res.pesan, "Gagal");
+          })
+          .catch(() => {
+            $f7.dialog.close();
+            $f7.dialog.alert("Koneksi bermasalah.", "Error");
+          });
+      }
+    };
+
+    return $render;
+  };
+</script>
