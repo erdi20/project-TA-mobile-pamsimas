@@ -34,8 +34,13 @@
           <span class="tabbar-label" style="font-size: 11px; color: #2563eb; font-weight: 600; margin-top: 2px">Beranda</span>
         </a>
 
-        <!-- PERUBAHAN: Tombol Tengah diubah jadi Refresh -->
-        <a href="#" class="link" @click="${refreshData}" style="position: relative; top: -22px; width: 60px; height: 60px; min-width: 60px; background: #2563eb; border-radius: 50%; display: flex; flex-direction: column; align-items: center; justify-content: center; box-shadow: 0 4px 12px rgba(37, 99, 235, 0.35); border: 3px solid white; opacity: 1 !important; transition: transform 0.2s">
+        <!-- Tombol Refresh -->
+        <a
+          href="#"
+          class="link"
+          @click="${refreshData}"
+          style="position: relative; top: -22px; width: 60px; height: 60px; min-width: 60px; background: #2563eb; border-radius: 50%; display: flex; flex-direction: column; align-items: center; justify-content: center; box-shadow: 0 4px 12px rgba(37, 99, 235, 0.35); border: 3px solid white; opacity: 1 !important; transition: transform 0.2s"
+        >
           <i class="icon f7-icons" style="font-size: 26px; color: white">arrow_clockwise</i>
           <span class="tabbar-label" style="display: block; font-size: 10px; color: white; margin-top: 1px">Segarkan</span>
         </a>
@@ -127,36 +132,33 @@
     };
 
     const pindahTabBeranda = () => {
-      $(".subnavbar").show(); 
+      $(".subnavbar").show();
       $f7.tab.show("#tab-tugas");
     };
 
-    // PERUBAHAN: Fungsi baru untuk memanggil ulang data dengan aman
     const refreshData = () => {
-      // Tampilkan toast agar terlihat elegan dan tidak nge-freeze HP
-      $f7.toast.create({
-        text: 'Menyinkronkan data terbaru...',
-        position: 'top',
-        closeTimeout: 2000,
-      }).open();
+      $f7.toast
+        .create({
+          text: "Menyinkronkan data terbaru...",
+          position: "top",
+          closeTimeout: 2000,
+        })
+        .open();
 
-      // Kosongkan HTML list sementara dan munculkan loading agar user tahu proses sedang berjalan (juga 100% mencegah kartu double)
       document.getElementById("list-tugas").innerHTML = "";
       document.getElementById("list-onprogress").innerHTML = "";
       document.getElementById("loading-tugas").style.display = "block";
 
-      // Jalankan ulang *fetch*
       muatTugas();
       muatRiwayat();
-      
-      // Jika sedang di tab profil, muat ulang profil juga
+
       if (document.getElementById("tab-profil").classList.contains("tab-active")) {
-          muatProfil();
+        muatProfil();
       }
     };
 
     const muatProfil = () => {
-      $(".subnavbar").hide(); 
+      $(".subnavbar").hide();
       const id_petugas = localStorage.getItem("petugas_id");
 
       fetch(`https://webinformasi.full.diskon.cloud/api/apipetugas/profil/${id_petugas}`)
@@ -181,8 +183,7 @@
 
           if (res.status && res.data.length > 0) {
             daftarTugasSemua = res.data;
-            
-            // Variabel diset kosong setiap fetch, sehingga MUSTAHIL menumpuk/double
+
             let dataTugas = [];
             let dataOnProgress = [];
 
@@ -194,8 +195,9 @@
               }
             });
 
-            renderCards(dataTugas, "list-tugas", false);
-            renderCards(dataOnProgress, "list-onprogress", true);
+            // PERUBAHAN: Menghilangkan argumen ke-3 (showStatus)
+            renderCards(dataTugas, "list-tugas");
+            renderCards(dataOnProgress, "list-onprogress");
 
             updateBadge("badge-tugas", dataTugas.length);
             updateBadge("badge-onprogress", dataOnProgress.length);
@@ -236,13 +238,11 @@
         </div>`;
     };
 
-    const renderCards = (dataArray, targetElementId, showStatus) => {
+    // PERUBAHAN: Menghapus logika showStatus sepenuhnya, UI card menjadi lega
+    const renderCards = (dataArray, targetElementId) => {
       let html = "";
       dataArray.forEach((item) => {
         let tgl = new Date(item.tanggal).toLocaleDateString("id-ID", { day: "numeric", month: "short", year: "numeric" });
-        let badgeVerif = showStatus
-          ? `<div style="text-align: right; margin-top: 12px; border-top: 1px dashed #e5e7eb; padding-top: 10px;"><span style="font-size: 12px; font-weight: 700; color: ${item.status === "Menunggu Verifikasi" ? "#f59e0b" : "#3b82f6"};">${item.status === "Menunggu Verifikasi" ? "Menunggu Verifikasi Server" : "Draf Tersimpan di HP (50%)"}</span></div>`
-          : "";
 
         html += `
           <div class="card card-laporan-klik elevation-2" data-id="${item.id}" style="border-radius: 16px; margin: 0 0 16px 0; background: #ffffff; cursor: pointer; border: 1px solid #f3f4f6;">
@@ -259,7 +259,6 @@
                 <div style="width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; flex-shrink: 0;"><i class="icon f7-icons size-16" style="color: #ef4444;">list_bullet</i></div>
                 <div style="font-size: 13px; color: #4b5563; margin-top: 4px;">Keterangan: ${item.keterangan || "-"}</div>
               </div>
-              ${badgeVerif}
             </div>
           </div>`;
       });
