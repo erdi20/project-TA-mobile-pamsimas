@@ -14,12 +14,11 @@
           </a>
         </div>
 
-        <!-- SUBNAVBAR (MENU TABS) -->
         <div class="subnavbar" style="background: #ffffff; border-top: 1px solid #f3f4f6">
           <div class="subnavbar-inner" style="justify-content: flex-start; gap: 24px; padding: 0 16px">
-            <a href="#tab-tugas" class="tab-link tab-link-active" style="color: #4b5563; font-size: 14px; font-weight: 600; text-transform: none"> Tugas <span class="badge color-red" id="badge-tugas" style="display: none; border-radius: 10px; margin-left: 4px">0</span> </a>
-            <a href="#tab-onprogress" class="tab-link" style="color: #4b5563; font-size: 14px; font-weight: 600; text-transform: none"> On-progress <span class="badge color-red" id="badge-onprogress" style="display: none; border-radius: 10px; margin-left: 4px">0</span> </a>
-            <a href="#tab-riwayat" class="tab-link" style="color: #4b5563; font-size: 14px; font-weight: 600; text-transform: none"> Riwayat </a>
+            <a href="#tab-tugas" class="tab-link tab-link-active" style="color: #4b5563; font-size: 14px; font-weight: 600; text-transform: none">Tugas <span class="badge color-red" id="badge-tugas" style="display: none; border-radius: 10px; margin-left: 4px">0</span></a>
+            <a href="#tab-onprogress" class="tab-link" style="color: #4b5563; font-size: 14px; font-weight: 600; text-transform: none">On-progress <span class="badge color-red" id="badge-onprogress" style="display: none; border-radius: 10px; margin-left: 4px">0</span></a>
+            <a href="#tab-riwayat" class="tab-link" style="color: #4b5563; font-size: 14px; font-weight: 600; text-transform: none">Riwayat</a>
           </div>
         </div>
       </div>
@@ -28,24 +27,16 @@
     <!-- BOTTOM TOOLBAR -->
     <div class="toolbar tabbar tabbar-icons toolbar-bottom" style="height: 65px; background: #ffffff; border-top: 1px solid #e5e7eb; overflow: visible !important; box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.05)">
       <div class="toolbar-inner" style="overflow: visible !important">
-        <!-- Tombol Home -->
         <a href="#tab-tugas" class="tab-link tab-link-active" @click="${pindahTabBeranda}">
           <i class="icon f7-icons" style="font-size: 24px; color: #2563eb">house_fill</i>
           <span class="tabbar-label" style="font-size: 11px; color: #2563eb; font-weight: 600; margin-top: 2px">Beranda</span>
         </a>
 
-        <!-- Tombol Refresh -->
-        <a
-          href="#"
-          class="link"
-          @click="${refreshData}"
-          style="position: relative; top: -22px; width: 60px; height: 60px; min-width: 60px; background: #2563eb; border-radius: 50%; display: flex; flex-direction: column; align-items: center; justify-content: center; box-shadow: 0 4px 12px rgba(37, 99, 235, 0.35); border: 3px solid white; opacity: 1 !important; transition: transform 0.2s"
-        >
+        <a href="#" class="link" @click="${refreshData}" style="position: relative; top: -22px; width: 60px; height: 60px; min-width: 60px; background: #2563eb; border-radius: 50%; display: flex; flex-direction: column; align-items: center; justify-content: center; box-shadow: 0 4px 12px rgba(37, 99, 235, 0.35); border: 3px solid white; opacity: 1 !important">
           <i class="icon f7-icons" style="font-size: 26px; color: white">arrow_clockwise</i>
           <span class="tabbar-label" style="display: block; font-size: 10px; color: white; margin-top: 1px">Segarkan</span>
         </a>
 
-        <!-- Tombol Profil -->
         <a href="#tab-profil" class="tab-link" @click="${muatProfil}">
           <i class="icon f7-icons" style="font-size: 24px; color: #9ca3af">person_fill</i>
           <span class="tabbar-label" style="font-size: 11px; color: #9ca3af; font-weight: 600; margin-top: 2px">Profil</span>
@@ -55,23 +46,19 @@
 
     <!-- KONTEN TABS -->
     <div class="tabs">
-      <!-- TAB 1: TUGAS -->
       <div id="tab-tugas" class="page-content tab tab-active">
         <div id="loading-tugas" class="text-align-center padding-top-large"><div class="preloader color-blue"></div></div>
         <div id="list-tugas" class="padding-horizontal padding-top"></div>
       </div>
 
-      <!-- TAB 2: ON-PROGRESS -->
       <div id="tab-onprogress" class="page-content tab">
         <div id="list-onprogress" class="padding-horizontal padding-top"></div>
       </div>
 
-      <!-- TAB 3: RIWAYAT -->
       <div id="tab-riwayat" class="page-content tab">
         <div id="list-riwayat" class="padding-horizontal padding-top"></div>
       </div>
 
-      <!-- TAB 4: PROFIL -->
       <div id="tab-profil" class="page-content tab">
         <div class="padding">
           <div class="card elevation-2" style="border-radius: 16px; margin: 0; background: #ffffff">
@@ -107,16 +94,15 @@
 <script>
   export default (props, { $f7, $on, $ }) => {
     let daftarTugasSemua = [];
+    const idPetugas = localStorage.getItem("petugas_id") || "";
 
     $on("pageInit", () => {
       muatTugas();
       muatRiwayat();
 
       const handleKlikKartu = (e) => {
-        let card = e.target.closest(".card-laporan-klik");
-        if (card) {
-          bukaFormPenanganan(card.getAttribute("data-id"));
-        }
+        const card = e.target.closest(".card-laporan-klik");
+        if (card) bukaFormPenanganan(card.getAttribute("data-id"));
       };
 
       document.getElementById("list-tugas")?.addEventListener("click", handleKlikKartu);
@@ -127,6 +113,7 @@
       $f7.dialog.confirm("Apakah Anda yakin ingin mengakhiri sesi dan keluar?", "Keluar Akun", () => {
         localStorage.removeItem("petugas_login");
         localStorage.removeItem("petugas_id");
+        localStorage.removeItem("petugas_nama");
         $f7.views.main.router.navigate("/login/", { clearPreviousHistory: true, reloadCurrent: true });
       });
     };
@@ -137,35 +124,23 @@
     };
 
     const refreshData = () => {
-      $f7.toast
-        .create({
-          text: "Menyinkronkan data terbaru...",
-          position: "top",
-          closeTimeout: 2000,
-        })
-        .open();
-
+      $f7.toast.create({ text: "Menyinkronkan data terbaru...", position: "top", closeTimeout: 2000 }).open();
       document.getElementById("list-tugas").innerHTML = "";
       document.getElementById("list-onprogress").innerHTML = "";
       document.getElementById("loading-tugas").style.display = "block";
 
       muatTugas();
       muatRiwayat();
-
-      if (document.getElementById("tab-profil").classList.contains("tab-active")) {
-        muatProfil();
-      }
+      if (document.getElementById("tab-profil").classList.contains("tab-active")) muatProfil();
     };
 
     const muatProfil = () => {
       $(".subnavbar").hide();
-      const id_petugas = localStorage.getItem("petugas_id");
-
-      fetch(`https://webinformasi.full.diskon.cloud/api/apipetugas/profil/${id_petugas}`)
+      fetch(`${API_URL}/profil/${idPetugas}`)
         .then((res) => res.json())
         .then((res) => {
           if (res.status) {
-            let data = res.data;
+            const data = res.data;
             document.getElementById("profil-nama").innerText = data.nama;
             document.getElementById("profil-username").innerText = `@${data.username}`;
             document.getElementById("profil-status").innerText = data.status === "Y" ? "Aktif" : "Nonaktif";
@@ -175,30 +150,27 @@
     };
 
     const muatTugas = () => {
-      const id_petugas = localStorage.getItem("petugas_id") || "";
-      fetch(`https://webinformasi.full.diskon.cloud/api/apipetugas/tugas/${id_petugas}`)
-        .then((response) => response.json())
+      fetch(`${API_URL}/tugas/${idPetugas}`)
+        .then((res) => res.json())
         .then((res) => {
           document.getElementById("loading-tugas").style.display = "none";
 
           if (res.status && res.data.length > 0) {
             daftarTugasSemua = res.data;
-
-            let dataTugas = [];
-            let dataOnProgress = [];
+            const dataTugas = [];
+            const dataOnProgress = [];
 
             res.data.forEach((item) => {
-              if (item.status === "Ditugaskan" || item.status === "Menunggu") {
-                localStorage.getItem(`draf_foto_${item.id}`) || localStorage.getItem(`draf_catatan_${item.id}`) ? dataOnProgress.push(item) : dataTugas.push(item);
-              } else if (item.status === "Menunggu Verifikasi" || item.status === "Diproses") {
+              const punyaDraf = localStorage.getItem(`draf_foto_${item.id}`) || localStorage.getItem(`draf_catatan_${item.id}`);
+              if ((item.status === "Ditugaskan" || item.status === "Menunggu") && !punyaDraf) {
+                dataTugas.push(item);
+              } else {
                 dataOnProgress.push(item);
               }
             });
 
-            // PERUBAHAN: Menghilangkan argumen ke-3 (showStatus)
             renderCards(dataTugas, "list-tugas");
             renderCards(dataOnProgress, "list-onprogress");
-
             updateBadge("badge-tugas", dataTugas.length);
             updateBadge("badge-onprogress", dataOnProgress.length);
           } else {
@@ -208,13 +180,14 @@
             updateBadge("badge-onprogress", 0);
           }
         })
-        .catch(() => (document.getElementById("loading-tugas").innerHTML = `<div class="block text-align-center margin-top-large"><p class="text-color-red">Koneksi server terputus.</p></div>`));
+        .catch(() => {
+          document.getElementById("loading-tugas").innerHTML = `<div class="block text-align-center margin-top-large"><p class="text-color-red">Koneksi server terputus.</p></div>`;
+        });
     };
 
     const muatRiwayat = () => {
-      const id_petugas = localStorage.getItem("petugas_id") || "";
-      fetch(`https://webinformasi.full.diskon.cloud/api/apipetugas/riwayat/${id_petugas}`)
-        .then((response) => response.json())
+      fetch(`${API_URL}/riwayat/${idPetugas}`)
+        .then((res) => res.json())
         .then((res) => {
           res.status && res.data.length > 0 ? renderCardsRiwayat(res.data, "list-riwayat") : tampilKosong("list-riwayat", "clock_fill", "Belum ada riwayat pengerjaan");
         });
@@ -222,12 +195,8 @@
 
     const updateBadge = (id, count) => {
       const badge = document.getElementById(id);
-      if (count > 0) {
-        badge.innerText = count;
-        badge.style.display = "inline-block";
-      } else {
-        badge.style.display = "none";
-      }
+      badge.innerText = count;
+      badge.style.display = count > 0 ? "inline-block" : "none";
     };
 
     const tampilKosong = (targetId, icon, text) => {
@@ -238,59 +207,59 @@
         </div>`;
     };
 
-    // PERUBAHAN: Menghapus logika showStatus sepenuhnya, UI card menjadi lega
     const renderCards = (dataArray, targetElementId) => {
-      let html = "";
-      dataArray.forEach((item) => {
-        let tgl = new Date(item.tanggal).toLocaleDateString("id-ID", { day: "numeric", month: "short", year: "numeric" });
+      if (dataArray.length === 0) return tampilKosong(targetElementId, "tray_fill", "Tidak ada laporan");
 
-        html += `
-          <div class="card card-laporan-klik elevation-2" data-id="${item.id}" style="border-radius: 16px; margin: 0 0 16px 0; background: #ffffff; cursor: pointer; border: 1px solid #f3f4f6;">
-            <div class="card-content card-content-padding" style="padding: 16px;">
-              <div style="display: flex; justify-content: space-between; margin-bottom: 12px;">
-                 <span style="font-size: 11px; font-weight: 700; color: #2563eb; background: #eff6ff; padding: 4px 8px; border-radius: 6px;">#${item.id}</span>
-                 <div style="font-size: 12px; color: #6b7280;"><i class="icon f7-icons size-12">calendar</i> ${tgl}</div>
+      document.getElementById(targetElementId).innerHTML = dataArray
+        .map((item) => {
+          const tgl = new Date(item.tanggal).toLocaleDateString("id-ID", { day: "numeric", month: "short", year: "numeric" });
+          return `
+            <div class="card card-laporan-klik elevation-2" data-id="${item.id}" style="border-radius: 16px; margin: 0 0 16px 0; background: #ffffff; cursor: pointer; border: 1px solid #f3f4f6;">
+              <div class="card-content card-content-padding" style="padding: 16px;">
+                <div style="display: flex; justify-content: space-between; margin-bottom: 12px;">
+                  <span style="font-size: 11px; font-weight: 700; color: #2563eb; background: #eff6ff; padding: 4px 8px; border-radius: 6px;">#${item.id}</span>
+                  <div style="font-size: 12px; color: #6b7280;"><i class="icon f7-icons size-12">calendar</i> ${tgl}</div>
+                </div>
+                <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 8px;">
+                  <div style="width: 28px; height: 28px; background: #f3f4f6; border-radius: 50%; display: flex; align-items: center; justify-content: center;"><i class="icon f7-icons size-14 color-gray">person_fill</i></div>
+                  <div style="font-size: 15px; font-weight: 600; color: #1f2937;">${item.nama || "Tanpa Nama"}</div>
+                </div>
+                <div style="display: flex; align-items: flex-start; gap: 10px;">
+                  <div style="width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; flex-shrink: 0;"><i class="icon f7-icons size-16" style="color: #ef4444;">list_bullet</i></div>
+                  <div style="font-size: 13px; color: #4b5563; margin-top: 4px;">Keterangan: ${item.keterangan || "-"}</div>
+                </div>
               </div>
-              <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 8px;">
-                <div style="width: 28px; height: 28px; background: #f3f4f6; border-radius: 50%; display: flex; align-items: center; justify-content: center;"><i class="icon f7-icons size-14 color-gray">person_fill</i></div>
-                <div style="font-size: 15px; font-weight: 600; color: #1f2937;">${item.nama || "Tanpa Nama"}</div>
-              </div>
-              <div style="display: flex; align-items: flex-start; gap: 10px;">
-                <div style="width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; flex-shrink: 0;"><i class="icon f7-icons size-16" style="color: #ef4444;">list_bullet</i></div>
-                <div style="font-size: 13px; color: #4b5563; margin-top: 4px;">Keterangan: ${item.keterangan || "-"}</div>
-              </div>
-            </div>
-          </div>`;
-      });
-      document.getElementById(targetElementId).innerHTML = html;
+            </div>`;
+        })
+        .join("");
     };
 
     const renderCardsRiwayat = (dataArray, targetElementId) => {
-      let html = "";
-      dataArray.forEach((item) => {
-        let isSelesai = item.status === "Selesai";
-        let colorTheme = isSelesai ? "#10b981" : "#ef4444";
-        html += `
-          <div class="card elevation-1" style="border-radius: 16px; margin: 0 0 16px 0; background: #ffffff; border: 1px solid #f3f4f6; opacity: 0.85;">
-            <div class="card-content card-content-padding" style="padding: 16px;">
-              <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
-                 <span style="font-size: 11px; font-weight: 700; color: #6b7280; background: #f3f4f6; padding: 4px 8px; border-radius: 6px;">#${item.id}</span>
-                 <div style="font-size: 12px; font-weight: 600; color: ${colorTheme};"><i class="icon f7-icons size-14">${isSelesai ? "checkmark_seal_fill" : "xmark_seal_fill"}</i> ${item.status}</div>
+      document.getElementById(targetElementId).innerHTML = dataArray
+        .map((item) => {
+          const isSelesai = item.status === "Selesai";
+          const colorTheme = isSelesai ? "#10b981" : "#ef4444";
+          return `
+            <div class="card elevation-1" style="border-radius: 16px; margin: 0 0 16px 0; background: #ffffff; border: 1px solid #f3f4f6; opacity: 0.85;">
+              <div class="card-content card-content-padding" style="padding: 16px;">
+                <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                  <span style="font-size: 11px; font-weight: 700; color: #6b7280; background: #f3f4f6; padding: 4px 8px; border-radius: 6px;">#${item.id}</span>
+                  <div style="font-size: 12px; font-weight: 600; color: ${colorTheme};"><i class="icon f7-icons size-14">${isSelesai ? "checkmark_seal_fill" : "xmark_seal_fill"}</i> ${item.status}</div>
+                </div>
+                <div style="font-size: 15px; font-weight: 600; color: #1f2937; margin-bottom: 4px;">${item.nama || "Tanpa Nama"}</div>
+                <div style="font-size: 12px; color: #6b7280; margin-bottom: 12px;">Diselesaikan: ${new Date(item.tgl_tindakan || item.tanggal).toLocaleDateString("id-ID")}</div>
+                <div style="background: #f9fafb; padding: 10px; border-radius: 8px; border-left: 3px solid ${colorTheme};">
+                  <span style="font-size: 11px; color: #9ca3af; display: block;">Catatan Penanganan:</span>
+                  <span style="font-size: 13px; color: #4b5563; font-style: italic;">"${item.catatan_penanganan || "Tidak ada catatan."}"</span>
+                </div>
               </div>
-              <div style="font-size: 15px; font-weight: 600; color: #1f2937; margin-bottom: 4px;">${item.nama || "Tanpa Nama"}</div>
-              <div style="font-size: 12px; color: #6b7280; margin-bottom: 12px;">Diselesaikan: ${new Date(item.tgl_tindakan || item.tanggal).toLocaleDateString("id-ID")}</div>
-              <div style="background: #f9fafb; padding: 10px; border-radius: 8px; border-left: 3px solid ${colorTheme};">
-                 <span style="font-size: 11px; color: #9ca3af; display: block;">Catatan Penanganan:</span>
-                 <span style="font-size: 13px; color: #4b5563; font-style: italic;">"${item.catatan_penanganan || "Tidak ada catatan."}"</span>
-              </div>
-            </div>
-          </div>`;
-      });
-      document.getElementById(targetElementId).innerHTML = html;
+            </div>`;
+        })
+        .join("");
     };
 
     const bukaFormPenanganan = (id_laporan) => {
-      let dataItem = daftarTugasSemua.find((x) => x.id === id_laporan);
+      const dataItem = daftarTugasSemua.find((x) => String(x.id) === String(id_laporan));
       if (dataItem) {
         localStorage.setItem("laporan_aktif", JSON.stringify(dataItem));
         $f7.views.main.router.navigate("/penanganan/");

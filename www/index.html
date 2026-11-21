@@ -10,15 +10,13 @@
 
     <meta http-equiv="Content-Security-Policy" content="default-src * 'self' 'unsafe-inline' 'unsafe-eval' data: gap: content:; script-src * 'self' 'unsafe-inline' 'unsafe-eval' https://unpkg.com; style-src * 'self' 'unsafe-inline' https://unpkg.com; img-src * 'self' data: https:;" />
 
-    <title>Framework7</title>
+    <title>PAMSIMAS Petugas</title>
     <link rel="stylesheet" href="core/framework7-bundle.min.css" />
     <link rel="stylesheet" href="css/app.css" />
     <link rel="stylesheet" href="css/custom.css" />
     <link rel="apple-touch-icon" href="img/f7-icon-square.png" />
     <link rel="icon" href="img/f7-icon.png" />
-    <!-- Leaflet CSS & JS -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-    <!-- Leaflet Routing Machine -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet-routing-machine@latest/dist/leaflet-routing-machine.css" />
   </head>
 
@@ -26,6 +24,7 @@
     <div id="app">
       <div class="view view-main view-init safe-areas" data-master-detail-breakpoint="768" data-url="/"></div>
     </div>
+
     <script src="core/framework7-bundle.min.js"></script>
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script src="https://unpkg.com/leaflet-routing-machine@latest/dist/leaflet-routing-machine.js"></script>
@@ -33,5 +32,105 @@
     <script src="js/store.js"></script>
     <script src="cordova.js"></script>
     <script src="js/app.js"></script>
+
+    <script>
+      // KONFIGURASI GLOBAL SERVER & GPS
+      const BASE_URL = "https://webinformasi.full.diskon.cloud";
+      const API_URL = `${BASE_URL}/api/apipetugas`;
+
+      window.gpsPetugas = null;
+      let watchIdGPS = null;
+      let dialogGpsAktif = false;
+
+      function mulaiPelacakGPS() {
+        if (watchIdGPS !== null || !navigator.geolocation) return;
+
+        watchIdGPS = navigator.geolocation.watchPosition(
+          (pos) => {
+            window.gpsPetugas = [pos.coords.latitude, pos.coords.longitude];
+            window.dispatchEvent(new CustomEvent("gpsUpdated", { detail: window.gpsPetugas }));
+          },
+          (err) => console.warn("Peringatan GPS:", err),
+          { enableHighAccuracy: true, maximumAge: 3000, timeout: 10000 }
+        );
+      }
+
+      function hentikanPelacakGPS() {
+        if (watchIdGPS !== null) {
+          navigator.geolocation.clearWatch(watchIdGPS);
+          watchIdGPS = null;
+        }
+        window.gpsPetugas = null;
+      }
+
+      function tampilkanDialogGPS(pesan, judul, aksi) {
+        if (dialogGpsAktif) return;
+        dialogGpsAktif = true;
+        app.dialog.confirm(
+          pesan,
+          judul,
+          () => {
+            dialogGpsAktif = false;
+            aksi();
+          },
+          () => {
+            dialogGpsAktif = false;
+          }
+        );
+      }
+
+      function cekSaklarGPS(diag) {
+        diag.isLocationEnabled((nyala) => {
+          if (nyala) {
+            mulaiPelacakGPS();
+          } else {
+            hentikanPelacakGPS();
+            tampilkanDialogGPS("GPS mati. Buka pengaturan untuk menyalakan?", "Info", () => diag.switchToLocationSettings());
+          }
+        }, console.error);
+      }
+
+      function cekGPS() {
+        if (localStorage.getItem("petugas_login") !== "true") {
+          hentikanPelacakGPS();
+          return;
+        }
+
+        if (!window.cordova || !cordova.plugins || !cordova.plugins.diagnostic) {
+          mulaiPelacakGPS();
+          return;
+        }
+
+        const diag = cordova.plugins.diagnostic;
+        diag.isLocationAuthorized((diizinkan) => {
+          if (diizinkan) {
+            cekSaklarGPS(diag);
+          } else {
+            diag.requestLocationAuthorization(
+              (status) => {
+                const perm = diag.permissionStatus;
+                if (status === perm.GRANTED || status === perm.GRANTED_WHEN_IN_USE) {
+                  cekSaklarGPS(diag);
+                } else {
+                  tampilkanDialogGPS("Aplikasi butuh izin lokasi. Buka pengaturan?", "Izin Ditolak", () => diag.switchToSettings());
+                }
+              },
+              console.error,
+              diag.locationAuthorizationMode.ANY
+            );
+          }
+        }, console.error);
+      }
+
+      document.addEventListener("deviceready", () => {
+        cekGPS();
+        if (window.cordova && cordova.plugins && cordova.plugins.diagnostic) {
+          cordova.plugins.diagnostic.registerLocationStateChangeHandler(cekGPS);
+        }
+        document.addEventListener("resume", cekGPS, false);
+      }, false);
+
+      $(document).on("page:afterin", cekGPS);
+    </script>
   </body>
 </html>

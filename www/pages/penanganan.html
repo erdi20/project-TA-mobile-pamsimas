@@ -1,53 +1,5 @@
 <template>
   <div class="page bg-color-white" data-name="penanganan">
-    <style>
-      .leaflet-routing-container {
-        display: none !important;
-      }
-      .gps-marker-petugas {
-        background-color: #4285f4;
-        border: 3px solid #ffffff;
-        border-radius: 50%;
-        box-shadow: 0 0 0 0 rgba(66, 133, 244, 0.7);
-        animation: pulse-gps 1.5s infinite;
-      }
-      @keyframes pulse-gps {
-        0% {
-          box-shadow: 0 0 0 0 rgba(66, 133, 244, 0.7);
-        }
-        70% {
-          box-shadow: 0 0 0 15px rgba(66, 133, 244, 0);
-        }
-        100% {
-          box-shadow: 0 0 0 0 rgba(66, 133, 244, 0);
-        }
-      }
-      .grid-kamera {
-        display: flex;
-        gap: 12px;
-        justify-content: space-between;
-      }
-      .kotak-kamera {
-        flex: 1;
-        aspect-ratio: 1 / 1;
-        background: #f4f5f7;
-        border: 2px dashed #c1c7d0;
-        border-radius: 12px;
-        position: relative;
-        overflow: hidden;
-      }
-      .isi-kamera {
-        width: 100%;
-        height: 100%;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        cursor: pointer;
-        position: relative;
-      }
-    </style>
-
     <a href="#" class="link elevation-3" @click="${kembaliKeHome}" style="position: absolute; top: 40px; left: 16px; z-index: 999; background: white; width: 44px; height: 44px; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #1c1c1e">
       <i class="icon f7-icons size-20">arrow_left</i>
     </a>
@@ -85,7 +37,6 @@
           </div>
 
           <div class="page-content padding-bottom-large">
-            <!-- FOTO PELAPOR -->
             <div class="card margin-top margin-horizontal" style="border-radius: 16px; border: none; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04)">
               <div class="card-content card-content-padding">
                 <div class="font-weight-600 size-14 margin-bottom-half" style="display: flex; justify-content: space-between">
@@ -97,11 +48,9 @@
               </div>
             </div>
 
-            <!-- KAMERA PROGRES -->
             <div class="block-title font-weight-bold color-black margin-top">Bukti Pengerjaan</div>
             <div class="block margin-bottom">
               <div class="grid-kamera">
-                <!-- 0% -->
                 <div class="kotak-kamera elevation-1">
                   <div class="isi-kamera" @click="${() => interaksiKamera('foto0')}">
                     <i id="icon-foto0" class="icon f7-icons size-28 color-gray">camera_viewfinder</i>
@@ -113,7 +62,6 @@
                   </a>
                 </div>
 
-                <!-- 50% -->
                 <div class="kotak-kamera elevation-1">
                   <div class="isi-kamera" @click="${() => interaksiKamera('foto50')}">
                     <i id="icon-foto50" class="icon f7-icons size-28 color-gray">camera_viewfinder</i>
@@ -125,7 +73,6 @@
                   </a>
                 </div>
 
-                <!-- 100% -->
                 <div class="kotak-kamera elevation-1">
                   <div class="isi-kamera" @click="${() => interaksiKamera('foto100')}">
                     <i id="icon-foto100" class="icon f7-icons size-28 color-gray">camera_viewfinder</i>
@@ -141,7 +88,7 @@
 
             <div class="block-title font-weight-bold color-black">Catatan Penanganan</div>
             <div class="block margin-top-half margin-bottom">
-              <textarea id="catatan-petugas" placeholder="Ketik rincian perbaikan..." style="width: 100%; min-height: 100px; font-size: 14px; background: #ffffff; border: 1px solid #d1d5db; border-radius: 12px; padding: 12px; box-sizing: border-box; box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05)"></textarea>
+              <textarea id="catatan-petugas" placeholder="Ketik rincian perbaikan..." style="width: 100%; min-height: 100px; font-size: 14px; background: #ffffff; border: 1px solid #d1d5db; border-radius: 12px; padding: 12px; box-sizing: border-box"></textarea>
             </div>
 
             <div class="block margin-top-large padding-bottom-large">
@@ -160,34 +107,42 @@
     let fotoBase64 = { foto0: "", foto50: "", foto100: "" };
     let petaLeaflet = null;
     let markerPetugas = null;
-    let watchId = null;
-    let lokasiSaatIni = null;
+    let latTarget = -7.55;
+    let lngTarget = 112.23;
 
     $on("pageInit", () => {
       const dataString = localStorage.getItem("laporan_aktif");
-      if (dataString) {
-        dataLaporan = JSON.parse(dataString);
+      if (!dataString) return;
 
-        document.getElementById("label-kategori").innerText = dataLaporan.jenis;
-        document.getElementById("label-lokasi").innerText = `Pelapor: ${dataLaporan.nama} - ${dataLaporan.no_telp || ""}`;
-        document.getElementById("teks-deskripsi").innerText = dataLaporan.keterangan;
-        document.getElementById("foto-pelapor").src = "https://webinformasi.full.diskon.cloud/img_laporan/" + dataLaporan.foto;
+      dataLaporan = JSON.parse(dataString);
+      latTarget = parseFloat(dataLaporan.latitude) || -7.55;
+      lngTarget = parseFloat(dataLaporan.longitude) || 112.23;
 
-        memuatDrafProgress();
+      document.getElementById("label-kategori").innerText = dataLaporan.jenis;
+      document.getElementById("label-lokasi").innerText = `Pelapor: ${dataLaporan.nama} - ${dataLaporan.no_telp || ""}`;
+      document.getElementById("teks-deskripsi").innerText = dataLaporan.keterangan;
+      document.getElementById("foto-pelapor").src = `${BASE_URL}/img_laporan/${dataLaporan.foto}`;
 
-        document.getElementById("catatan-petugas").addEventListener("input", (e) => {
-          localStorage.setItem(`draf_catatan_${dataLaporan.id}`, e.target.value);
-          cekStatusTombolKirim();
-        });
+      memuatDrafProgress();
 
-        setTimeout(() => initPetaLiveTracking(), 150);
-        document.addEventListener("backbutton", onBackKeyDown, false);
-      }
+      document.getElementById("catatan-petugas").addEventListener("input", (e) => {
+        localStorage.setItem(`draf_catatan_${dataLaporan.id}`, e.target.value);
+        cekStatusTombolKirim();
+      });
+
+      setTimeout(initPeta, 150);
+      document.addEventListener("backbutton", onBackKeyDown, false);
+      window.addEventListener("gpsUpdated", onGpsUpdated);
     });
 
     $on("pageBeforeRemove", () => {
-      if (watchId) navigator.geolocation.clearWatch(watchId);
       document.removeEventListener("backbutton", onBackKeyDown, false);
+      window.removeEventListener("gpsUpdated", onGpsUpdated);
+      // Bersihkan instance peta agar tidak menumpuk di RAM HP
+      if (petaLeaflet) {
+        petaLeaflet.remove();
+        petaLeaflet = null;
+      }
     });
 
     const onBackKeyDown = (e) => {
@@ -196,31 +151,51 @@
     };
 
     const kembaliKeHome = () => {
-      if (watchId) navigator.geolocation.clearWatch(watchId);
       $f7.views.main.router.back("/home/", { force: true });
     };
 
-    const lihatFotoPelapor = () => {
-      let pb = $f7.photoBrowser.create({
-        photos: ["https://webinformasi.full.diskon.cloud/img_laporan/" + dataLaporan.foto],
-        theme: "dark",
-        toolbar: false,
-        navbar: true,
-        backLinkText: "Tutup",
-      });
-      pb.open();
+    const bukaPreviewFoto = (src) => {
+      $f7.photoBrowser.create({ photos: [src], theme: "dark", toolbar: false, navbar: true, backLinkText: "Tutup" }).open();
     };
+
+    const lihatFotoPelapor = () => bukaPreviewFoto(`${BASE_URL}/img_laporan/${dataLaporan.foto}`);
 
     const memuatDrafProgress = () => {
       const drafFoto = localStorage.getItem(`draf_foto_${dataLaporan.id}`);
-      if (drafFoto) {
+
+      if (drafFoto !== null) {
         fotoBase64 = JSON.parse(drafFoto);
-        if (fotoBase64.foto0) updateUIKamera("foto0", fotoBase64.foto0);
-        if (fotoBase64.foto50) updateUIKamera("foto50", fotoBase64.foto50);
-        if (fotoBase64.foto100) updateUIKamera("foto100", fotoBase64.foto100);
+      } else if (dataLaporan.foto_perbaikan) {
+        try {
+          const listFotoServer = JSON.parse(dataLaporan.foto_perbaikan);
+          const cacheBuster = `?t=${Date.now()}`;
+
+          if (Array.isArray(listFotoServer)) {
+            listFotoServer.forEach((namaFile) => {
+              const urlLengkap = `${BASE_URL}/img_penanganan/${namaFile}${cacheBuster}`;
+              if (namaFile.includes("_0.jpg")) fotoBase64.foto0 = urlLengkap;
+              else if (namaFile.includes("_50.jpg")) fotoBase64.foto50 = urlLengkap;
+              else if (namaFile.includes("_100.jpg")) fotoBase64.foto100 = urlLengkap;
+            });
+            localStorage.setItem(`draf_foto_${dataLaporan.id}`, JSON.stringify(fotoBase64));
+          }
+        } catch (e) {
+          console.warn("Gagal membaca foto dari server:", e);
+        }
       }
+
+      ["foto0", "foto50", "foto100"].forEach((key) => {
+        if (fotoBase64[key]) updateUIKamera(key, fotoBase64[key]);
+      });
+
       const drafCatatan = localStorage.getItem(`draf_catatan_${dataLaporan.id}`);
-      if (drafCatatan) document.getElementById("catatan-petugas").value = drafCatatan;
+      if (drafCatatan !== null) {
+        document.getElementById("catatan-petugas").value = drafCatatan;
+      } else if (dataLaporan.catatan_penanganan) {
+        document.getElementById("catatan-petugas").value = dataLaporan.catatan_penanganan;
+        localStorage.setItem(`draf_catatan_${dataLaporan.id}`, dataLaporan.catatan_penanganan);
+      }
+
       cekStatusTombolKirim();
     };
 
@@ -229,64 +204,70 @@
       const isComplete = fotoBase64.foto0 && fotoBase64.foto50 && fotoBase64.foto100 && catatan;
       const btn = document.getElementById("btn-kirim");
 
-      if (isComplete) {
-        btn.innerText = "Kirim & Selesaikan";
-        btn.classList.replace("color-blue", "color-green");
-      } else {
-        btn.innerText = "Simpan Progres";
-        btn.classList.replace("color-green", "color-blue");
-      }
+      btn.innerText = isComplete ? "Kirim & Selesaikan" : "Simpan Progres";
+      btn.classList.toggle("color-green", Boolean(isComplete));
+      btn.classList.toggle("color-blue", !isComplete);
     };
 
-    const updateUIKamera = (jenisFoto, base64Image) => {
-      if (!base64Image) return hapusFoto(jenisFoto);
+    const updateUIKamera = (jenisFoto, imageSrc) => {
+      if (!imageSrc) return hapusFoto(jenisFoto);
 
-      document.getElementById(`preview-${jenisFoto}`).src = base64Image;
-      document.getElementById(`preview-${jenisFoto}`).style.display = "block";
+      const preview = document.getElementById(`preview-${jenisFoto}`);
+      preview.src = imageSrc;
+      preview.style.display = "block";
       document.getElementById(`icon-${jenisFoto}`).style.display = "none";
       document.getElementById(`label-${jenisFoto}`).style.display = "none";
       document.getElementById(`hapus-${jenisFoto}`).style.display = "flex";
-      document.getElementById(`preview-${jenisFoto}`).closest(".kotak-kamera").style.border = "2px solid #34c759";
+      preview.closest(".kotak-kamera").style.border = "2px solid #34c759";
       cekStatusTombolKirim();
     };
 
     const hapusFoto = (jenisFoto) => {
       fotoBase64[jenisFoto] = "";
       localStorage.setItem(`draf_foto_${dataLaporan.id}`, JSON.stringify(fotoBase64));
-      document.getElementById(`preview-${jenisFoto}`).src = "";
-      document.getElementById(`preview-${jenisFoto}`).style.display = "none";
+
+      const preview = document.getElementById(`preview-${jenisFoto}`);
+      preview.src = "";
+      preview.style.display = "none";
       document.getElementById(`icon-${jenisFoto}`).style.display = "block";
       document.getElementById(`label-${jenisFoto}`).style.display = "block";
       document.getElementById(`hapus-${jenisFoto}`).style.display = "none";
-      document.getElementById(`preview-${jenisFoto}`).closest(".kotak-kamera").style.border = "2px dashed #c1c7d0";
+      preview.closest(".kotak-kamera").style.border = "2px dashed #c1c7d0";
       cekStatusTombolKirim();
     };
 
-    // PERUBAHAN: Memulihkan logika Photo Browser jika foto sudah ada
     const interaksiKamera = (jenisFoto) => {
-      if (!fotoBase64[jenisFoto]) {
-        bukaKamera(jenisFoto);
+      fotoBase64[jenisFoto] ? bukaPreviewFoto(fotoBase64[jenisFoto]) : bukaKamera(jenisFoto);
+    };
+
+    const updateMarkerPetugas = (coords) => {
+      if (!coords || !petaLeaflet) return;
+
+      if (!markerPetugas) {
+        const iconPetugas = L.divIcon({ className: "gps-marker-petugas", iconSize: [20, 20], iconAnchor: [10, 10] });
+        markerPetugas = L.marker(coords, { icon: iconPetugas }).addTo(petaLeaflet);
+
+        L.Routing.control({
+          waypoints: [L.latLng(coords[0], coords[1]), L.latLng(latTarget, lngTarget)],
+          routeWhileDragging: false,
+          addWaypoints: false,
+          show: false,
+          createMarker: () => null,
+        }).addTo(petaLeaflet);
+
+        petaLeaflet.fitBounds(L.latLngBounds([coords, [latTarget, lngTarget]]), { padding: [50, 50] });
       } else {
-        // Jika foto sudah ada, buka full screen photo browser
-        let pb = $f7.photoBrowser.create({
-          photos: [fotoBase64[jenisFoto]],
-          theme: "dark",
-          toolbar: false,
-          navbar: true,
-          backLinkText: "Tutup",
-        });
-        pb.open();
+        markerPetugas.setLatLng(coords);
       }
     };
 
-    const initPetaLiveTracking = () => {
-      let latTarget = dataLaporan.latitude || -7.55;
-      let lngTarget = dataLaporan.longitude || 112.23;
+    const onGpsUpdated = (e) => updateMarkerPetugas(e.detail);
 
+    const initPeta = () => {
       petaLeaflet = L.map("map-penanganan", { zoomControl: false }).setView([latTarget, lngTarget], 15);
       L.tileLayer("https://{s}.google.com/vt/lyrs=s,h&x={x}&y={y}&z={z}", { maxZoom: 20, subdomains: ["mt0", "mt1", "mt2", "mt3"] }).addTo(petaLeaflet);
 
-      let targetIcon = L.icon({
+      const targetIcon = L.icon({
         iconUrl: "https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-red.png",
         shadowUrl: "https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png",
         iconSize: [25, 41],
@@ -294,51 +275,15 @@
       });
       L.marker([latTarget, lngTarget], { icon: targetIcon }).addTo(petaLeaflet).bindPopup("Lokasi Tujuan").openPopup();
 
-      let isMencariGPS = true;
-      $f7.dialog.preloader("Mencari GPS...");
-
-      let iconPetugas = L.divIcon({ className: "gps-marker-petugas", iconSize: [20, 20], iconAnchor: [10, 10] });
-
-      watchId = navigator.geolocation.watchPosition(
-        (pos) => {
-          if (isMencariGPS) {
-            $f7.dialog.close();
-            isMencariGPS = false; 
-          }
-          lokasiSaatIni = [pos.coords.latitude, pos.coords.longitude];
-
-          if (!markerPetugas) {
-            markerPetugas = L.marker(lokasiSaatIni, { icon: iconPetugas }).addTo(petaLeaflet);
-            L.Routing.control({
-              waypoints: [L.latLng(lokasiSaatIni[0], lokasiSaatIni[1]), L.latLng(latTarget, lngTarget)],
-              routeWhileDragging: false,
-              addWaypoints: false,
-              show: false,
-              createMarker: () => null,
-            }).addTo(petaLeaflet);
-            let group = new L.featureGroup([markerPetugas, L.marker([latTarget, lngTarget])]);
-            petaLeaflet.fitBounds(group.getBounds(), { padding: [50, 50] });
-          } else {
-            markerPetugas.setLatLng(lokasiSaatIni);
-          }
-        },
-        (err) => {
-          if (isMencariGPS) {
-            $f7.dialog.close();
-            isMencariGPS = false;
-          }
-          console.warn("GPS:", err);
-        },
-        { enableHighAccuracy: true, maximumAge: 0, timeout: 10000 },
-      );
+      if (window.gpsPetugas) updateMarkerPetugas(window.gpsPetugas);
     };
 
     const formatDMS = (lat, lng) => {
       const convert = (val) => {
-        let abs = Math.abs(val);
-        let d = Math.floor(abs);
-        let m = Math.floor((abs - d) * 60);
-        let s = ((abs - d - m / 60) * 3600).toFixed(3);
+        const abs = Math.abs(val);
+        const d = Math.floor(abs);
+        const m = Math.floor((abs - d) * 60);
+        const s = ((abs - d - m / 60) * 3600).toFixed(3);
         return `${d}°${m}'${s}"`;
       };
       return `${convert(lat)}${lat >= 0 ? "N" : "S"} ${convert(lng)}${lng >= 0 ? "E" : "W"}`;
@@ -346,19 +291,19 @@
 
     const pasangWatermark = (base64Ori) => {
       return new Promise((resolve) => {
-        let img = new Image();
+        const img = new Image();
         img.onload = () => {
-          let cvs = document.createElement("canvas");
-          let ctx = cvs.getContext("2d");
+          const cvs = document.createElement("canvas");
+          const ctx = cvs.getContext("2d");
           cvs.width = img.width;
           cvs.height = img.height;
           ctx.drawImage(img, 0, 0);
 
-          let tgl = new Date().toLocaleString("id-ID", { day: "2-digit", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit", second: "2-digit" });
-          let nama = localStorage.getItem("petugas_nama") || "PETUGAS LAPANGAN";
-          let kordinat = lokasiSaatIni ? formatDMS(lokasiSaatIni[0], lokasiSaatIni[1]) : "Mencari GPS...";
+          const tgl = new Date().toLocaleString("id-ID", { day: "2-digit", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit", second: "2-digit" });
+          const nama = localStorage.getItem("petugas_nama") || "PETUGAS LAPANGAN";
+          const kordinat = window.gpsPetugas ? formatDMS(window.gpsPetugas[0], window.gpsPetugas[1]) : "Koordinat Belum Terkunci";
 
-          let fs = cvs.width * 0.032;
+          const fs = cvs.width * 0.032;
           ctx.fillStyle = "rgba(0,0,0,0.5)";
           ctx.fillRect(0, cvs.height - fs * 5.5, cvs.width, fs * 5.5);
 
@@ -368,7 +313,7 @@
           ctx.fillText(kordinat, fs, cvs.height - fs * 2.3);
           ctx.fillText(`${dataLaporan.id} - ${nama}`, fs, cvs.height - fs * 0.8);
 
-          resolve(cvs.toDataURL("image/jpeg", 0.8));
+          resolve(cvs.toDataURL("image/jpeg", 0.7));
         };
         img.src = base64Ori;
       });
@@ -379,8 +324,7 @@
 
       navigator.camera.getPicture(
         (imageData) => {
-          let base64Ori = imageData.startsWith("data:image") ? imageData : "data:image/jpeg;base64," + imageData;
-
+          const base64Ori = imageData.startsWith("data:image") ? imageData : `data:image/jpeg;base64,${imageData}`;
           pasangWatermark(base64Ori).then((base64Watermark) => {
             fotoBase64[jenisFoto] = base64Watermark;
             localStorage.setItem(`draf_foto_${dataLaporan.id}`, JSON.stringify(fotoBase64));
@@ -388,34 +332,29 @@
           });
         },
         (err) => console.log("Kamera:", err),
-        { quality: 60, destinationType: Camera.DestinationType.DATA_URL, sourceType: Camera.PictureSourceType.CAMERA, encodingType: Camera.EncodingType.JPEG, targetWidth: 1000, targetHeight: 1000, correctOrientation: true, saveToPhotoAlbum: false },
+        { quality: 60, destinationType: Camera.DestinationType.DATA_URL, sourceType: Camera.PictureSourceType.CAMERA, encodingType: Camera.EncodingType.JPEG, targetWidth: 800, targetHeight: 800, correctOrientation: true, saveToPhotoAlbum: false },
       );
     };
 
     const kirimHasil = () => {
       const catatan = document.getElementById("catatan-petugas").value.trim();
       const id_petugas = localStorage.getItem("petugas_id");
-
       const isComplete = fotoBase64.foto0 && fotoBase64.foto50 && fotoBase64.foto100 && catatan;
 
       if (!fotoBase64.foto0 && !fotoBase64.foto50 && !fotoBase64.foto100) {
         return $f7.dialog.alert("Minimal 1 foto progres harus diambil untuk disimpan!", "Validasi");
       }
 
-      let pesanKonfirmasi = isComplete ? "Kirim data perbaikan ke Admin? Data tidak dapat diubah setelah dikirim." : "Simpan progres pekerjaan ke Server saat ini?";
+      if (!window.gpsPetugas) {
+        return $f7.dialog.alert("Data lokasi GPS belum terbaca. Tunggu sebentar di area terbuka lalu coba lagi.", "Lokasi Belum Siap");
+      }
+
+      const pesanKonfirmasi = isComplete ? "Kirim data perbaikan ke Admin? Data tidak dapat diubah setelah dikirim." : "Simpan progres pekerjaan ke Server saat ini?";
 
       $f7.dialog.confirm(pesanKonfirmasi, "Konfirmasi", () => {
         $f7.dialog.preloader("Mengirim ke Server...");
 
-        navigator.geolocation.getCurrentPosition(
-          (pos) => eksekusiFetch(pos.coords.latitude, pos.coords.longitude),
-          () => eksekusiFetch(dataLaporan.latitude, dataLaporan.longitude),
-          { enableHighAccuracy: true, timeout: 5000 },
-        );
-      });
-
-      function eksekusiFetch(latSubmit, lngSubmit) {
-        fetch("https://webinformasi.full.diskon.cloud/api/apipetugas/submit_penanganan", {
+        fetch(`${API_URL}/submit_penanganan`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
@@ -425,8 +364,8 @@
             foto0: fotoBase64.foto0,
             foto50: fotoBase64.foto50,
             foto100: fotoBase64.foto100,
-            latitude: latSubmit,
-            longitude: lngSubmit,
+            latitude: window.gpsPetugas[0],
+            longitude: window.gpsPetugas[1],
           }),
         })
           .then((res) => res.json())
@@ -436,7 +375,7 @@
               if (res.is_complete) {
                 localStorage.removeItem(`draf_foto_${dataLaporan.id}`);
                 localStorage.removeItem(`draf_catatan_${dataLaporan.id}`);
-                $f7.dialog.alert(res.pesan, "Berhasil Selesai", () => kembaliKeHome());
+                $f7.dialog.alert(res.pesan, "Berhasil Selesai", kembaliKeHome);
               } else {
                 $f7.dialog.alert(res.pesan, "Progres Tersimpan");
               }
@@ -448,7 +387,7 @@
             $f7.dialog.close();
             $f7.dialog.alert("Koneksi bermasalah. Pastikan sinyal internet stabil.", "Error Jaringan");
           });
-      }
+      });
     };
 
     return $render;
