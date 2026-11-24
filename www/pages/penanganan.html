@@ -138,7 +138,6 @@
     $on("pageBeforeRemove", () => {
       document.removeEventListener("backbutton", onBackKeyDown, false);
       window.removeEventListener("gpsUpdated", onGpsUpdated);
-      // Bersihkan instance peta agar tidak menumpuk di RAM HP
       if (petaLeaflet) {
         petaLeaflet.remove();
         petaLeaflet = null;
@@ -200,13 +199,12 @@
     };
 
     const cekStatusTombolKirim = () => {
-      const catatan = document.getElementById("catatan-petugas").value.trim();
-      const isComplete = fotoBase64.foto0 && fotoBase64.foto50 && fotoBase64.foto100 && catatan;
+      const is3Foto = Boolean(fotoBase64.foto0 && fotoBase64.foto50 && fotoBase64.foto100);
       const btn = document.getElementById("btn-kirim");
 
-      btn.innerText = isComplete ? "Kirim & Selesaikan" : "Simpan Progres";
-      btn.classList.toggle("color-green", Boolean(isComplete));
-      btn.classList.toggle("color-blue", !isComplete);
+      btn.innerText = is3Foto ? "Kirim & Selesaikan" : "Simpan Progres";
+      btn.classList.toggle("color-green", is3Foto);
+      btn.classList.toggle("color-blue", !is3Foto);
     };
 
     const updateUIKamera = (jenisFoto, imageSrc) => {
@@ -237,7 +235,22 @@
     };
 
     const interaksiKamera = (jenisFoto) => {
-      fotoBase64[jenisFoto] ? bukaPreviewFoto(fotoBase64[jenisFoto]) : bukaKamera(jenisFoto);
+      if (fotoBase64[jenisFoto]) {
+        return bukaPreviewFoto(fotoBase64[jenisFoto]);
+      }
+
+      // Validasi urutan pengambilan foto progres
+      if (jenisFoto === "foto50" && !fotoBase64.foto0) {
+        return $f7.dialog.alert("Ambil foto progres 0% terlebih dahulu!", "Urutan Progres");
+      }
+      if (jenisFoto === "foto100" && !fotoBase64.foto0) {
+        return $f7.dialog.alert("Ambil foto progres 0% terlebih dahulu!", "Urutan Progres");
+      }
+      if (jenisFoto === "foto100" && !fotoBase64.foto50) {
+        return $f7.dialog.alert("Ambil foto progres 50% terlebih dahulu!", "Urutan Progres");
+      }
+
+      bukaKamera(jenisFoto);
     };
 
     const updateMarkerPetugas = (coords) => {
@@ -339,17 +352,30 @@
     const kirimHasil = () => {
       const catatan = document.getElementById("catatan-petugas").value.trim();
       const id_petugas = localStorage.getItem("petugas_id");
-      const isComplete = fotoBase64.foto0 && fotoBase64.foto50 && fotoBase64.foto100 && catatan;
+      const is3Foto = Boolean(fotoBase64.foto0 && fotoBase64.foto50 && fotoBase64.foto100);
 
-      if (!fotoBase64.foto0 && !fotoBase64.foto50 && !fotoBase64.foto100) {
-        return $f7.dialog.alert("Minimal 1 foto progres harus diambil untuk disimpan!", "Validasi");
+      // 1. Validasi urutan progres agar tidak ada tahap yang diloncati
+      if (!fotoBase64.foto0) {
+        if (!fotoBase64.foto50 && !fotoBase64.foto100) {
+          return $f7.dialog.alert("Minimal foto progres 0% harus diambil untuk disimpan!", "Validasi");
+        }
+        return $f7.dialog.alert("Foto progres harus berurutan! Lengkapi foto 0% terlebih dahulu.", "Validasi Urutan");
+      }
+
+      if (fotoBase64.foto100 && !fotoBase64.foto50) {
+        return $f7.dialog.alert("Foto progres harus berurutan! Lengkapi foto 50% terlebih dahulu sebelum mengirim 100%.", "Validasi Urutan");
+      }
+
+      // 2. Wajibkan catatan jika 3 foto sudah lengkap agar status pasti berubah ke Menunggu Verifikasi
+      if (is3Foto && !catatan) {
+        return $f7.dialog.alert("Semua foto progres (0%, 50%, 100%) sudah lengkap. Isi catatan penanganan terlebih dahulu untuk mengirim ke Admin!", "Catatan Wajib Diisi");
       }
 
       if (!window.gpsPetugas) {
         return $f7.dialog.alert("Data lokasi GPS belum terbaca. Tunggu sebentar di area terbuka lalu coba lagi.", "Lokasi Belum Siap");
       }
 
-      const pesanKonfirmasi = isComplete ? "Kirim data perbaikan ke Admin? Data tidak dapat diubah setelah dikirim." : "Simpan progres pekerjaan ke Server saat ini?";
+      const pesanKonfirmasi = is3Foto ? "Kirim data perbaikan ke Admin? Data tidak dapat diubah setelah dikirim." : "Simpan progres pekerjaan ke Server saat ini?";
 
       $f7.dialog.confirm(pesanKonfirmasi, "Konfirmasi", () => {
         $f7.dialog.preloader("Mengirim ke Server...");
