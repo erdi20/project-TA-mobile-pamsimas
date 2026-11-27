@@ -1,98 +1,98 @@
 <template>
-  <div class="page bg-color-white" data-name="penanganan">
-    <a href="#" class="link elevation-3" @click="${kembaliKeHome}" style="position: absolute; top: 40px; left: 16px; z-index: 999; background: white; width: 44px; height: 44px; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #1c1c1e">
+  <div class="page" data-name="penanganan" style="background: #F3F8FB">
+    <a href="#" class="link" @click="${kembaliKeHome}" style="position: absolute; top: 40px; left: 16px; z-index: 999; background: #1B365D; width: 46px; height: 46px; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #FFFFFF; box-shadow: 0 6px 18px rgba(27, 54, 93, 0.25); border: 2px solid #60C1E5">
       <i class="icon f7-icons size-20">arrow_left</i>
     </a>
 
     <div class="page-content" style="padding: 0; height: 100vh; position: relative">
       <div id="map-penanganan" style="width: 100%; height: 100%; z-index: 1"></div>
 
-      <div class="elevation-4" style="position: absolute; bottom: 30px; left: 16px; right: 16px; z-index: 10; border-radius: 20px; background: #ffffff; padding: 20px">
+      <div style="position: absolute; bottom: 28px; left: 16px; right: 16px; z-index: 10; border-radius: 22px; background: #FFFFFF; padding: 20px; box-shadow: 0 10px 30px rgba(27, 54, 93, 0.18); border: 1.5px solid rgba(160, 224, 239, 0.85)">
         <div style="display: flex; align-items: center; margin-bottom: 16px">
-          <div style="width: 48px; height: 48px; background: #ffedea; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-right: 16px">
-            <i class="icon f7-icons color-red size-24">placemark_fill</i>
+          <div style="width: 50px; height: 50px; background: rgba(160, 224, 239, 0.45); border: 1.5px solid #60C1E5; border-radius: 16px; display: flex; align-items: center; justify-content: center; margin-right: 14px; flex-shrink: 0">
+            <i class="icon f7-icons size-26" style="color: #005A9C">placemark_fill</i>
           </div>
           <div style="flex: 1; overflow: hidden">
-            <div class="font-weight-bold size-14 text-color-gray" style="text-transform: uppercase; letter-spacing: 0.5px">Tujuan Anda</div>
-            <div class="font-weight-bold size-18 text-color-black" id="label-kategori" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis">...</div>
-            <div class="size-13 text-color-gray margin-top-xs" id="label-lokasi" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis">Mencari lokasi...</div>
+            <div class="font-weight-bold size-11" style="color: #005A9C; text-transform: uppercase; letter-spacing: 0.6px">Tujuan Penanganan</div>
+            <div class="font-weight-bold size-18" id="label-kategori" style="color: #1B365D; white-space: nowrap; overflow: hidden; text-overflow: ellipsis">...</div>
+            <div class="size-13 margin-top-xs" id="label-lokasi" style="color: #5A7188; white-space: nowrap; overflow: hidden; text-overflow: ellipsis">Mencari lokasi...</div>
           </div>
         </div>
-        <button class="button button-fill button-large color-blue elevation-2 popup-open" data-popup="#popup-form-tugas" style="border-radius: 14px; font-weight: 700; font-size: 16px; width: 100%; height: 50px">Form Pekerjaan</button>
+        <button class="button button-fill button-large pamsimas-btn-primary popup-open" data-popup="#popup-form-tugas" style="font-size: 16px; width: 100%; height: 52px">Form Pekerjaan</button>
       </div>
     </div>
 
     <!-- POPUP FORM -->
-    <div class="popup" id="popup-form-tugas" style="background: #f4f5f7">
+    <div class="popup" id="popup-form-tugas" style="background: #F3F8FB">
       <div class="view">
-        <div class="page">
-          <div class="navbar" style="background: white; box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05)">
-            <div class="navbar-bg" style="background: transparent"></div>
+        <div class="page" style="background: #F3F8FB">
+          <div class="navbar" style="background: #1B365D; box-shadow: 0 2px 12px rgba(27, 54, 93, 0.15)">
+            <div class="navbar-bg" style="background: #1B365D"></div>
             <div class="navbar-inner">
-              <div class="title" style="font-weight: 700; color: #1c1c1e">Data Progres Pekerjaan</div>
+              <div class="title" style="font-weight: 800; color: #FFFFFF">Data Progres Pekerjaan</div>
               <div class="right">
-                <a href="#" class="link popup-close" style="color: #1c1c1e"><i class="icon f7-icons">multiply_circle_fill</i></a>
+                <a href="#" class="link popup-close" style="color: #A0E0EF"><i class="icon f7-icons size-24">multiply_circle_fill</i></a>
               </div>
             </div>
           </div>
 
-          <div class="page-content padding-bottom-large">
-            <div class="card margin-top margin-horizontal" style="border-radius: 16px; border: none; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04)">
-              <div class="card-content card-content-padding">
-                <div class="font-weight-600 size-14 margin-bottom-half" style="display: flex; justify-content: space-between">
+          <div class="page-content padding-bottom-large" style="background: #F3F8FB">
+            <div class="pamsimas-card margin-top margin-horizontal">
+              <div class="card-content card-content-padding" style="padding: 16px">
+                <div class="font-weight-700 size-14 margin-bottom-half" style="display: flex; justify-content: space-between; align-items: center; color: #1B365D">
                   Foto Laporan Pelapor:
-                  <span class="text-color-blue size-12 font-weight-500"><i class="icon f7-icons size-14">zoom_in</i> Klik untuk perbesar</span>
+                  <span class="size-12 font-weight-700" style="color: #005A9C"><i class="icon f7-icons size-14">zoom_in</i> Perbesar</span>
                 </div>
-                <img id="foto-pelapor" src="" @click="${lihatFotoPelapor}" style="width: 100%; height: 180px; object-fit: cover; border-radius: 12px; background: #eee; cursor: zoom-in" />
-                <div class="margin-top text-color-gray size-13 font-italic" style="background: #f8f9fa; padding: 10px; border-radius: 8px; border-left: 3px solid #1a73e8">"<span id="teks-deskripsi"></span>"</div>
+                <img id="foto-pelapor" src="" @click="${lihatFotoPelapor}" style="width: 100%; height: 180px; object-fit: cover; border-radius: 14px; background: #F3F8FB; border: 1.5px solid #A0E0EF; cursor: zoom-in" />
+                <div class="margin-top size-13 font-italic" style="background: #F3F8FB; color: #5A7188; padding: 12px; border-radius: 12px; border-left: 3.5px solid #005A9C">"<span id="teks-deskripsi"></span>"</div>
               </div>
             </div>
 
-            <div class="block-title font-weight-bold color-black margin-top">Bukti Pengerjaan</div>
+            <div class="block-title font-weight-bold margin-top" style="color: #1B365D">Bukti Pengerjaan</div>
             <div class="block margin-bottom">
               <div class="grid-kamera">
-                <div class="kotak-kamera elevation-1">
+                <div class="kotak-kamera">
                   <div class="isi-kamera" @click="${() => interaksiKamera('foto0')}">
-                    <i id="icon-foto0" class="icon f7-icons size-28 color-gray">camera_viewfinder</i>
-                    <div id="label-foto0" class="size-11 font-weight-600 text-color-gray margin-top-xs">0%</div>
+                    <i id="icon-foto0" class="icon f7-icons size-28" style="color: #60C1E5">camera_viewfinder</i>
+                    <div id="label-foto0" class="size-12 font-weight-800 margin-top-xs" style="color: #005A9C">0%</div>
                     <img id="preview-foto0" src="" style="width: 100%; height: 100%; object-fit: cover; position: absolute; top: 0; left: 0; display: none" />
                   </div>
-                  <a href="#" id="hapus-foto0" @click="${() => hapusFoto('foto0')}" style="position: absolute; top: 6px; right: 6px; background: #ef4444; width: 28px; height: 28px; border-radius: 50%; display: none; align-items: center; justify-content: center; z-index: 10; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3)">
+                  <a href="#" id="hapus-foto0" @click="${() => hapusFoto('foto0')}" style="position: absolute; top: 6px; right: 6px; background: #E04F5F; width: 28px; height: 28px; border-radius: 50%; display: none; align-items: center; justify-content: center; z-index: 10; box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25)">
                     <i class="icon f7-icons size-14 color-white">trash</i>
                   </a>
                 </div>
 
-                <div class="kotak-kamera elevation-1">
+                <div class="kotak-kamera">
                   <div class="isi-kamera" @click="${() => interaksiKamera('foto50')}">
-                    <i id="icon-foto50" class="icon f7-icons size-28 color-gray">camera_viewfinder</i>
-                    <div id="label-foto50" class="size-11 font-weight-600 text-color-gray margin-top-xs">50%</div>
+                    <i id="icon-foto50" class="icon f7-icons size-28" style="color: #60C1E5">camera_viewfinder</i>
+                    <div id="label-foto50" class="size-12 font-weight-800 margin-top-xs" style="color: #005A9C">50%</div>
                     <img id="preview-foto50" src="" style="width: 100%; height: 100%; object-fit: cover; position: absolute; top: 0; left: 0; display: none" />
                   </div>
-                  <a href="#" id="hapus-foto50" @click="${() => hapusFoto('foto50')}" style="position: absolute; top: 6px; right: 6px; background: #ef4444; width: 28px; height: 28px; border-radius: 50%; display: none; align-items: center; justify-content: center; z-index: 10; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3)">
+                  <a href="#" id="hapus-foto50" @click="${() => hapusFoto('foto50')}" style="position: absolute; top: 6px; right: 6px; background: #E04F5F; width: 28px; height: 28px; border-radius: 50%; display: none; align-items: center; justify-content: center; z-index: 10; box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25)">
                     <i class="icon f7-icons size-14 color-white">trash</i>
                   </a>
                 </div>
 
-                <div class="kotak-kamera elevation-1">
+                <div class="kotak-kamera">
                   <div class="isi-kamera" @click="${() => interaksiKamera('foto100')}">
-                    <i id="icon-foto100" class="icon f7-icons size-28 color-gray">camera_viewfinder</i>
-                    <div id="label-foto100" class="size-11 font-weight-600 text-color-gray margin-top-xs">100%</div>
+                    <i id="icon-foto100" class="icon f7-icons size-28" style="color: #60C1E5">camera_viewfinder</i>
+                    <div id="label-foto100" class="size-12 font-weight-800 margin-top-xs" style="color: #005A9C">100%</div>
                     <img id="preview-foto100" src="" style="width: 100%; height: 100%; object-fit: cover; position: absolute; top: 0; left: 0; display: none" />
                   </div>
-                  <a href="#" id="hapus-foto100" @click="${() => hapusFoto('foto100')}" style="position: absolute; top: 6px; right: 6px; background: #ef4444; width: 28px; height: 28px; border-radius: 50%; display: none; align-items: center; justify-content: center; z-index: 10; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3)">
+                  <a href="#" id="hapus-foto100" @click="${() => hapusFoto('foto100')}" style="position: absolute; top: 6px; right: 6px; background: #E04F5F; width: 28px; height: 28px; border-radius: 50%; display: none; align-items: center; justify-content: center; z-index: 10; box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25)">
                     <i class="icon f7-icons size-14 color-white">trash</i>
                   </a>
                 </div>
               </div>
             </div>
 
-            <div class="block-title font-weight-bold color-black">Catatan Penanganan</div>
+            <div class="block-title font-weight-bold" style="color: #1B365D">Catatan Penanganan</div>
             <div class="block margin-top-half margin-bottom">
-              <textarea id="catatan-petugas" placeholder="Ketik rincian perbaikan..." style="width: 100%; min-height: 100px; font-size: 14px; background: #ffffff; border: 1px solid #d1d5db; border-radius: 12px; padding: 12px; box-sizing: border-box"></textarea>
+              <textarea id="catatan-petugas" class="pamsimas-input" placeholder="Ketik rincian perbaikan..." style="min-height: 110px; background: #FFFFFF"></textarea>
             </div>
 
             <div class="block margin-top-large padding-bottom-large">
-              <button id="btn-kirim" class="button button-fill button-large color-blue elevation-3" style="border-radius: 14px; font-weight: 700; height: 54px" @click="${kirimHasil}">Simpan Progres</button>
+              <button id="btn-kirim" class="button button-fill button-large color-blue pamsimas-btn-primary" style="height: 54px; font-size: 16px" @click="${kirimHasil}">Simpan Progres</button>
             </div>
           </div>
         </div>
@@ -216,7 +216,7 @@
       document.getElementById(`icon-${jenisFoto}`).style.display = "none";
       document.getElementById(`label-${jenisFoto}`).style.display = "none";
       document.getElementById(`hapus-${jenisFoto}`).style.display = "flex";
-      preview.closest(".kotak-kamera").style.border = "2px solid #34c759";
+      preview.closest(".kotak-kamera").style.border = "2.5px solid #005A9C";
       cekStatusTombolKirim();
     };
 
@@ -230,7 +230,7 @@
       document.getElementById(`icon-${jenisFoto}`).style.display = "block";
       document.getElementById(`label-${jenisFoto}`).style.display = "block";
       document.getElementById(`hapus-${jenisFoto}`).style.display = "none";
-      preview.closest(".kotak-kamera").style.border = "2px dashed #c1c7d0";
+      preview.closest(".kotak-kamera").style.border = "2px dashed #60C1E5";
       cekStatusTombolKirim();
     };
 
@@ -239,7 +239,6 @@
         return bukaPreviewFoto(fotoBase64[jenisFoto]);
       }
 
-      // Validasi urutan pengambilan foto progres
       if (jenisFoto === "foto50" && !fotoBase64.foto0) {
         return $f7.dialog.alert("Ambil foto progres 0% terlebih dahulu!", "Urutan Progres");
       }
@@ -354,7 +353,6 @@
       const id_petugas = localStorage.getItem("petugas_id");
       const is3Foto = Boolean(fotoBase64.foto0 && fotoBase64.foto50 && fotoBase64.foto100);
 
-      // 1. Validasi urutan progres agar tidak ada tahap yang diloncati
       if (!fotoBase64.foto0) {
         if (!fotoBase64.foto50 && !fotoBase64.foto100) {
           return $f7.dialog.alert("Minimal foto progres 0% harus diambil untuk disimpan!", "Validasi");
@@ -366,7 +364,6 @@
         return $f7.dialog.alert("Foto progres harus berurutan! Lengkapi foto 50% terlebih dahulu sebelum mengirim 100%.", "Validasi Urutan");
       }
 
-      // 2. Wajibkan catatan jika 3 foto sudah lengkap agar status pasti berubah ke Menunggu Verifikasi
       if (is3Foto && !catatan) {
         return $f7.dialog.alert("Semua foto progres (0%, 50%, 100%) sudah lengkap. Isi catatan penanganan terlebih dahulu untuk mengirim ke Admin!", "Catatan Wajib Diisi");
       }

@@ -1,36 +1,38 @@
 <template>
-  <div class="page bg-color-white" data-name="login">
-    <div class="page-content login-screen-content" style="display: flex; flex-direction: column; min-height: 100vh; padding: 40px 24px 30px; background: #faf9f9">
-      <div style="flex: 1; display: flex; flex-direction: column; justify-content: center">
-        <div class="text-align-center" style="margin-bottom: 48px">
-          <div class="elevation-2" style="width: 88px; height: 88px; background: #2563eb; border-radius: 28px; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px; transform: rotate(10deg)">
-            <div style="transform: rotate(-10deg)">
-              <i class="icon f7-icons size-44 color-white">drop_fill</i>
-            </div>
-          </div>
-          <h1 style="margin: 0; font-size: 32px; font-weight: 800; color: #1f2937; letter-spacing: 1px">PAMSIMAS</h1>
-          <p style="margin: 8px 0 0; color: #6b7280; font-size: 15px; font-weight: 500">Portal Petugas Lapangan</p>
+  <div class="page" data-name="login" style="background: #F3F8FB">
+    <div class="page-content login-screen-content" style="padding: 0; min-height: 100vh; background: #F3F8FB; display: flex; flex-direction: column">
+      <!-- HEADER MELENGKUNG NAVY -->
+      <div style="background: linear-gradient(145deg, #1B365D 0%, #005A9C 100%); padding: 54px 24px 76px; border-bottom-left-radius: 34px; border-bottom-right-radius: 34px; text-align: center; box-shadow: 0 10px 28px rgba(27, 54, 93, 0.22)">
+        <div style="width: 84px; height: 84px; background: rgba(160, 224, 239, 0.16); border: 2px solid #60C1E5; border-radius: 26px; display: flex; align-items: center; justify-content: center; margin: 0 auto 16px; box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15)">
+          <i class="icon f7-icons size-42" style="color: #A0E0EF">drop_fill</i>
         </div>
+        <h1 style="margin: 0; font-size: 28px; font-weight: 800; color: #FFFFFF; letter-spacing: 1px">PAMSIMAS</h1>
+        <div style="display: inline-block; margin-top: 8px; background: rgba(96, 193, 229, 0.22); color: #A0E0EF; font-size: 12px; font-weight: 700; padding: 5px 14px; border-radius: 20px; border: 1px solid rgba(160, 224, 239, 0.35)">
+          Portal Petugas Lapangan
+        </div>
+      </div>
 
-        <div class="card elevation-2" style="border-radius: 24px; margin: 0; background: #ffffff; border: 1px solid #f3f4f6">
-          <div class="card-content card-content-padding" style="padding: 32px 24px">
+      <!-- KARTU FORM LOGIN -->
+      <div style="padding: 0 22px 30px; margin-top: -46px; flex: 1">
+        <div class="pamsimas-card" style="border-radius: 24px; margin: 0">
+          <div class="card-content card-content-padding" style="padding: 30px 24px">
             <form id="form-login" @submit="${(e) => e.preventDefault()}">
-              <div style="margin-bottom: 24px">
-                <div class="text-color-gray size-12 font-weight-700 margin-bottom-half" style="text-transform: uppercase; letter-spacing: 0.5px">Username</div>
-                <input type="text" id="input-username" placeholder="Ketik username Anda..." required style="width: 100%; font-size: 15px; font-weight: 500; color: #1f2937; background: #ffffff; border: 1.5px solid #e5e7eb; border-radius: 14px; padding: 16px; box-sizing: border-box" />
+              <div style="margin-bottom: 22px">
+                <div class="size-12 font-weight-700 margin-bottom-half" style="color: #1B365D; text-transform: uppercase; letter-spacing: 0.6px">Username</div>
+                <input type="text" id="input-username" class="pamsimas-input" placeholder="Ketik username Anda..." required />
               </div>
 
-              <div style="margin-bottom: 40px; position: relative">
-                <div class="text-color-gray size-12 font-weight-700 margin-bottom-half" style="text-transform: uppercase; letter-spacing: 0.5px">Password</div>
+              <div style="margin-bottom: 34px; position: relative">
+                <div class="size-12 font-weight-700 margin-bottom-half" style="color: #1B365D; text-transform: uppercase; letter-spacing: 0.6px">Password</div>
                 <div style="position: relative">
-                  <input type="password" id="input-password" placeholder="Ketik kata sandi..." required style="width: 100%; font-size: 15px; font-weight: 500; color: #1f2937; background: #ffffff; border: 1.5px solid #e5e7eb; border-radius: 14px; padding: 16px 45px 16px 16px; box-sizing: border-box" />
-                  <a href="#" class="link text-color-gray" @click="${togglePassword}" style="position: absolute; right: 14px; top: 50%; transform: translateY(-50%); width: 30px; height: 30px; display: flex; align-items: center; justify-content: center">
+                  <input type="password" id="input-password" class="pamsimas-input" placeholder="Ketik kata sandi..." required style="padding-right: 46px" />
+                  <a href="#" class="link" @click="${togglePassword}" style="position: absolute; right: 12px; top: 50%; transform: translateY(-50%); width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; color: #005A9C">
                     <i class="icon f7-icons size-22" id="icon-toggle-password">eye_slash_fill</i>
                   </a>
                 </div>
               </div>
 
-              <button type="button" class="button button-fill button-large color-blue elevation-3" @click="${prosesLogin}" style="border-radius: 14px; font-weight: 700; height: 56px; font-size: 16px">Masuk Sistem</button>
+              <button type="button" class="button button-fill button-large pamsimas-btn-primary" @click="${prosesLogin}" style="height: 54px; font-size: 16px">Masuk Sistem</button>
             </form>
           </div>
         </div>

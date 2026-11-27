@@ -1,86 +1,90 @@
 <template>
-  <div class="page page-with-subnavbar" data-name="home" style="background-color: #faf9f9">
-    <!-- NAVBAR ATAS -->
-    <div class="navbar" style="background: #ffffff; box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05)">
-      <div class="navbar-bg" style="background: #ffffff"></div>
+  <div class="page page-with-subnavbar" data-name="home" style="background-color: #F3F8FB">
+    <!-- NAVBAR ATAS NAVY -->
+    <div class="navbar" style="background: #1B365D; box-shadow: 0 2px 12px rgba(27, 54, 93, 0.15)">
+      <div class="navbar-bg" style="background: #1B365D"></div>
       <div class="navbar-inner sliding" style="padding: 0 16px">
-        <div class="left">
-          <div class="title" style="font-weight: 700; font-size: 20px; color: #1f2937; letter-spacing: 0.5px">PAMSIMAS</div>
+        <div class="left" style="display: flex; align-items: center; gap: 10px">
+          <div style="width: 34px; height: 34px; background: rgba(96, 193, 229, 0.2); border: 1.5px solid #60C1E5; border-radius: 10px; display: flex; align-items: center; justify-content: center">
+            <i class="icon f7-icons size-18" style="color: #A0E0EF">drop_fill</i>
+          </div>
+          <div class="title" style="font-weight: 800; font-size: 19px; color: #FFFFFF; letter-spacing: 0.5px; margin: 0">PAMSIMAS</div>
         </div>
         <div class="right">
-          <a href="#" class="link" @click="${konfirmasiLogout}" style="background: #fee2e2; padding: 6px 12px; border-radius: 20px; display: flex; align-items: center; gap: 6px">
-            <i class="icon f7-icons size-16" style="color: #ef4444">square_arrow_right</i>
-            <span style="font-size: 13px; font-weight: 600; color: #ef4444">Keluar</span>
+          <a href="#" class="link" @click="${konfirmasiLogout}" style="background: rgba(255, 255, 255, 0.12); padding: 6px 13px; border-radius: 20px; display: flex; align-items: center; gap: 6px; border: 1px solid rgba(160, 224, 239, 0.35)">
+            <i class="icon f7-icons size-15" style="color: #A0E0EF">square_arrow_right</i>
+            <span style="font-size: 12px; font-weight: 700; color: #FFFFFF">Keluar</span>
           </a>
         </div>
 
-        <div class="subnavbar" style="background: #ffffff; border-top: 1px solid #f3f4f6">
-          <div class="subnavbar-inner" style="justify-content: flex-start; gap: 24px; padding: 0 16px">
-            <a href="#tab-tugas" class="tab-link tab-link-active" style="color: #4b5563; font-size: 14px; font-weight: 600; text-transform: none">Tugas <span class="badge color-red" id="badge-tugas" style="display: none; border-radius: 10px; margin-left: 4px">0</span></a>
-            <a href="#tab-onprogress" class="tab-link" style="color: #4b5563; font-size: 14px; font-weight: 600; text-transform: none">On-progress <span class="badge color-red" id="badge-onprogress" style="display: none; border-radius: 10px; margin-left: 4px">0</span></a>
-            <a href="#tab-riwayat" class="tab-link" style="color: #4b5563; font-size: 14px; font-weight: 600; text-transform: none">Riwayat</a>
+        <div class="subnavbar pamsimas-subnavbar">
+          <div class="subnavbar-inner" style="justify-content: flex-start; gap: 10px; padding: 0 16px">
+            <a href="#tab-tugas" class="tab-link tab-link-active">Tugas <span class="badge" id="badge-tugas" style="display: none; background: #A0E0EF; color: #1B365D; font-weight: 800; border-radius: 10px; margin-left: 4px">0</span></a>
+            <a href="#tab-onprogress" class="tab-link">On-progress <span class="badge" id="badge-onprogress" style="display: none; background: #A0E0EF; color: #1B365D; font-weight: 800; border-radius: 10px; margin-left: 4px">0</span></a>
+            <a href="#tab-riwayat" class="tab-link">Riwayat</a>
           </div>
         </div>
       </div>
     </div>
 
     <!-- BOTTOM TOOLBAR -->
-    <div class="toolbar tabbar tabbar-icons toolbar-bottom" style="height: 65px; background: #ffffff; border-top: 1px solid #e5e7eb; overflow: visible !important; box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.05)">
+    <div class="toolbar tabbar tabbar-icons toolbar-bottom pamsimas-tabbar">
       <div class="toolbar-inner" style="overflow: visible !important">
         <a href="#tab-tugas" class="tab-link tab-link-active" @click="${pindahTabBeranda}">
-          <i class="icon f7-icons" style="font-size: 24px; color: #2563eb">house_fill</i>
-          <span class="tabbar-label" style="font-size: 11px; color: #2563eb; font-weight: 600; margin-top: 2px">Beranda</span>
+          <i class="icon f7-icons" style="font-size: 24px">house_fill</i>
+          <!-- <span class="tabbar-label" style="font-size: 11px; font-weight: 700; margin-top: 2px">Beranda</span> -->
         </a>
 
-        <a href="#" class="link" @click="${refreshData}" style="position: relative; top: -22px; width: 60px; height: 60px; min-width: 60px; background: #2563eb; border-radius: 50%; display: flex; flex-direction: column; align-items: center; justify-content: center; box-shadow: 0 4px 12px rgba(37, 99, 235, 0.35); border: 3px solid white; opacity: 1 !important">
-          <i class="icon f7-icons" style="font-size: 26px; color: white">arrow_clockwise</i>
-          <span class="tabbar-label" style="display: block; font-size: 10px; color: white; margin-top: 1px">Segarkan</span>
+        <a href="#" class="link pamsimas-fab-refresh" @click="${refreshData}">
+          <i class="icon f7-icons" style="font-size: 24px; color: #FFFFFF">arrow_clockwise</i>
+          <!-- <span class="tabbar-label" style="display: block; font-size: 10px; font-weight: 600; color: #A0E0EF; margin-top: 1px">Segarkan</span> -->
         </a>
 
         <a href="#tab-profil" class="tab-link" @click="${muatProfil}">
-          <i class="icon f7-icons" style="font-size: 24px; color: #9ca3af">person_fill</i>
-          <span class="tabbar-label" style="font-size: 11px; color: #9ca3af; font-weight: 600; margin-top: 2px">Profil</span>
+          <i class="icon f7-icons" style="font-size: 24px">person_fill</i>
+          <!-- <span class="tabbar-label" style="font-size: 11px; font-weight: 700; margin-top: 2px">Profil</span> -->
         </a>
       </div>
     </div>
 
     <!-- KONTEN TABS -->
     <div class="tabs">
-      <div id="tab-tugas" class="page-content tab tab-active">
+      <div id="tab-tugas" class="page-content tab tab-active" style="background: #F3F8FB">
         <div id="loading-tugas" class="text-align-center padding-top-large"><div class="preloader color-blue"></div></div>
         <div id="list-tugas" class="padding-horizontal padding-top"></div>
       </div>
 
-      <div id="tab-onprogress" class="page-content tab">
+      <div id="tab-onprogress" class="page-content tab" style="background: #F3F8FB">
         <div id="list-onprogress" class="padding-horizontal padding-top"></div>
       </div>
 
-      <div id="tab-riwayat" class="page-content tab">
+      <div id="tab-riwayat" class="page-content tab" style="background: #F3F8FB">
         <div id="list-riwayat" class="padding-horizontal padding-top"></div>
       </div>
 
-      <div id="tab-profil" class="page-content tab">
+      <div id="tab-profil" class="page-content tab" style="background: #F3F8FB">
         <div class="padding">
-          <div class="card elevation-2" style="border-radius: 16px; margin: 0; background: #ffffff">
-            <div class="card-content card-content-padding text-align-center" style="padding: 24px">
-              <div style="width: 80px; height: 80px; background: #eff6ff; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 16px">
-                <i class="icon f7-icons size-40 color-blue">person_alt_circle_fill</i>
+          <div class="pamsimas-card" style="margin: 0; overflow: hidden">
+            <div style="height: 90px; background: linear-gradient(135deg, #1B365D 0%, #005A9C 65%, #60C1E5 100%)"></div>
+            <div class="card-content card-content-padding text-align-center" style="padding: 0 24px 26px">
+              <div style="width: 84px; height: 84px; background: #F3F8FB; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: -42px auto 14px; border: 4px solid #FFFFFF; box-shadow: 0 6px 16px rgba(27, 54, 93, 0.16)">
+                <i class="icon f7-icons size-42" style="color: #005A9C">person_alt_circle_fill</i>
               </div>
-              <h2 id="profil-nama" style="margin: 0; font-size: 20px; font-weight: 700; color: #1f2937">Memuat...</h2>
-              <p id="profil-username" style="margin: 4px 0 16px; font-size: 14px; color: #6b7280"></p>
+              <h2 id="profil-nama" style="margin: 0; font-size: 20px; font-weight: 800; color: #1B365D">Memuat...</h2>
+              <p id="profil-username" style="margin: 4px 0 18px; font-size: 14px; font-weight: 600; color: #005A9C"></p>
 
-              <div style="background: #f3f4f6; border-radius: 12px; padding: 12px; text-align: left">
-                <div style="display: flex; justify-content: space-between; margin-bottom: 8px">
-                  <span style="font-size: 13px; color: #6b7280">Level Akses:</span>
-                  <span style="font-size: 13px; font-weight: 600; color: #1f2937">Petugas Penanganan</span>
+              <div style="background: #F3F8FB; border-radius: 16px; padding: 14px 16px; text-align: left; border: 1px solid rgba(160, 224, 239, 0.85)">
+                <div style="display: flex; justify-content: space-between; margin-bottom: 10px; padding-bottom: 10px; border-bottom: 1px solid rgba(96, 193, 229, 0.3)">
+                  <span style="font-size: 13px; color: #5A7188">Level Akses</span>
+                  <span style="font-size: 13px; font-weight: 700; color: #1B365D">Petugas Penanganan</span>
                 </div>
-                <div style="display: flex; justify-content: space-between; margin-bottom: 8px">
-                  <span style="font-size: 13px; color: #6b7280">Status Akun:</span>
-                  <span id="profil-status" style="font-size: 13px; font-weight: 600; color: #10b981">Aktif</span>
+                <div style="display: flex; justify-content: space-between; margin-bottom: 10px; padding-bottom: 10px; border-bottom: 1px solid rgba(96, 193, 229, 0.3)">
+                  <span style="font-size: 13px; color: #5A7188">Status Akun</span>
+                  <span id="profil-status" style="font-size: 12px; font-weight: 700; color: #0E8A72; background: rgba(14, 138, 114, 0.12); padding: 2px 10px; border-radius: 12px">Aktif</span>
                 </div>
                 <div style="display: flex; justify-content: space-between">
-                  <span style="font-size: 13px; color: #6b7280">Terdaftar:</span>
-                  <span id="profil-tgl" style="font-size: 13px; font-weight: 600; color: #1f2937">-</span>
+                  <span style="font-size: 13px; color: #5A7188">Terdaftar</span>
+                  <span id="profil-tgl" style="font-size: 13px; font-weight: 700; color: #1B365D">-</span>
                 </div>
               </div>
             </div>
@@ -181,7 +185,7 @@
           }
         })
         .catch(() => {
-          document.getElementById("loading-tugas").innerHTML = `<div class="block text-align-center margin-top-large"><p class="text-color-red">Koneksi server terputus.</p></div>`;
+          document.getElementById("loading-tugas").innerHTML = `<div class="block text-align-center margin-top-large"><p style="color: #E04F5F; font-weight: 600;">Koneksi server terputus.</p></div>`;
         });
     };
 
@@ -201,9 +205,11 @@
 
     const tampilKosong = (targetId, icon, text) => {
       document.getElementById(targetId).innerHTML = `
-        <div class="display-flex flex-direction-column align-items-center justify-content-center" style="height: 50vh;">
-          <i class="icon f7-icons text-color-gray" style="font-size: 48px; margin-bottom: 12px; opacity: 0.5;">${icon}</i>
-          <p class="text-color-gray size-14 font-weight-500">${text}</p>
+        <div class="display-flex flex-direction-column align-items-center justify-content-center" style="height: 52vh;">
+          <div style="width: 76px; height: 76px; background: rgba(160, 224, 239, 0.35); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-bottom: 14px;">
+            <i class="icon f7-icons" style="font-size: 36px; color: #005A9C;">${icon}</i>
+          </div>
+          <p style="color: #5A7188; font-size: 14px; font-weight: 600; margin: 0;">${text}</p>
         </div>`;
     };
 
@@ -214,19 +220,21 @@
         .map((item) => {
           const tgl = new Date(item.tanggal).toLocaleDateString("id-ID", { day: "numeric", month: "short", year: "numeric" });
           return `
-            <div class="card card-laporan-klik elevation-2" data-id="${item.id}" style="border-radius: 16px; margin: 0 0 16px 0; background: #ffffff; cursor: pointer; border: 1px solid #f3f4f6;">
+            <div class="pamsimas-card card-laporan-klik" data-id="${item.id}" style="margin: 0 0 14px 0; cursor: pointer;">
               <div class="card-content card-content-padding" style="padding: 16px;">
-                <div style="display: flex; justify-content: space-between; margin-bottom: 12px;">
-                  <span style="font-size: 11px; font-weight: 700; color: #2563eb; background: #eff6ff; padding: 4px 8px; border-radius: 6px;">#${item.id}</span>
-                  <div style="font-size: 12px; color: #6b7280;"><i class="icon f7-icons size-12">calendar</i> ${tgl}</div>
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                  <span style="font-size: 11px; font-weight: 800; color: #1B365D; background: #A0E0EF; padding: 4px 10px; border-radius: 8px; letter-spacing: 0.3px;">#${item.id}</span>
+                  <div style="font-size: 12px; font-weight: 600; color: #005A9C; display: flex; align-items: center; gap: 4px;"><i class="icon f7-icons size-13">calendar</i> ${tgl}</div>
                 </div>
-                <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 8px;">
-                  <div style="width: 28px; height: 28px; background: #f3f4f6; border-radius: 50%; display: flex; align-items: center; justify-content: center;"><i class="icon f7-icons size-14 color-gray">person_fill</i></div>
-                  <div style="font-size: 15px; font-weight: 600; color: #1f2937;">${item.nama || "Tanpa Nama"}</div>
+                <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 10px;">
+                  <div style="width: 32px; height: 32px; background: rgba(160, 224, 239, 0.3); border: 1px solid #60C1E5; border-radius: 10px; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                    <i class="icon f7-icons size-15" style="color: #005A9C;">person_fill</i>
+                  </div>
+                  <div style="font-size: 15px; font-weight: 700; color: #1B365D;">${item.nama || "Tanpa Nama"}</div>
                 </div>
-                <div style="display: flex; align-items: flex-start; gap: 10px;">
-                  <div style="width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; flex-shrink: 0;"><i class="icon f7-icons size-16" style="color: #ef4444;">list_bullet</i></div>
-                  <div style="font-size: 13px; color: #4b5563; margin-top: 4px;">Keterangan: ${item.keterangan || "-"}</div>
+                <div style="background: #F3F8FB; padding: 10px 12px; border-radius: 12px; display: flex; align-items: flex-start; gap: 8px; border-left: 3.5px solid #60C1E5;">
+                  <i class="icon f7-icons size-15" style="color: #005A9C; margin-top: 2px; flex-shrink: 0;">doc_text_fill</i>
+                  <div style="font-size: 13px; color: #5A7188; line-height: 1.4;">${item.keterangan || "-"}</div>
                 </div>
               </div>
             </div>`;
@@ -238,19 +246,22 @@
       document.getElementById(targetElementId).innerHTML = dataArray
         .map((item) => {
           const isSelesai = item.status === "Selesai";
-          const colorTheme = isSelesai ? "#10b981" : "#ef4444";
+          const colorTheme = isSelesai ? "#0E8A72" : "#E04F5F";
+          const badgeBg = isSelesai ? "rgba(14, 138, 114, 0.12)" : "rgba(224, 79, 95, 0.12)";
           return `
-            <div class="card elevation-1" style="border-radius: 16px; margin: 0 0 16px 0; background: #ffffff; border: 1px solid #f3f4f6; opacity: 0.85;">
+            <div class="pamsimas-card" style="margin: 0 0 14px 0;">
               <div class="card-content card-content-padding" style="padding: 16px;">
-                <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
-                  <span style="font-size: 11px; font-weight: 700; color: #6b7280; background: #f3f4f6; padding: 4px 8px; border-radius: 6px;">#${item.id}</span>
-                  <div style="font-size: 12px; font-weight: 600; color: ${colorTheme};"><i class="icon f7-icons size-14">${isSelesai ? "checkmark_seal_fill" : "xmark_seal_fill"}</i> ${item.status}</div>
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                  <span style="font-size: 11px; font-weight: 800; color: #1B365D; background: #A0E0EF; padding: 4px 10px; border-radius: 8px;">#${item.id}</span>
+                  <div style="font-size: 12px; font-weight: 700; color: ${colorTheme}; background: ${badgeBg}; padding: 4px 10px; border-radius: 12px; display: flex; align-items: center; gap: 4px;">
+                    <i class="icon f7-icons size-13">${isSelesai ? "checkmark_seal_fill" : "xmark_seal_fill"}</i> ${item.status}
+                  </div>
                 </div>
-                <div style="font-size: 15px; font-weight: 600; color: #1f2937; margin-bottom: 4px;">${item.nama || "Tanpa Nama"}</div>
-                <div style="font-size: 12px; color: #6b7280; margin-bottom: 12px;">Diselesaikan: ${new Date(item.tgl_tindakan || item.tanggal).toLocaleDateString("id-ID")}</div>
-                <div style="background: #f9fafb; padding: 10px; border-radius: 8px; border-left: 3px solid ${colorTheme};">
-                  <span style="font-size: 11px; color: #9ca3af; display: block;">Catatan Penanganan:</span>
-                  <span style="font-size: 13px; color: #4b5563; font-style: italic;">"${item.catatan_penanganan || "Tidak ada catatan."}"</span>
+                <div style="font-size: 15px; font-weight: 700; color: #1B365D; margin-bottom: 4px;">${item.nama || "Tanpa Nama"}</div>
+                <div style="font-size: 12px; font-weight: 600; color: #005A9C; margin-bottom: 12px;">Diselesaikan: ${new Date(item.tgl_tindakan || item.tanggal).toLocaleDateString("id-ID")}</div>
+                <div style="background: #F3F8FB; padding: 10px 12px; border-radius: 12px; border-left: 3.5px solid ${colorTheme};">
+                  <span style="font-size: 11px; font-weight: 700; color: #5A7188; display: block; margin-bottom: 2px;">Catatan Penanganan:</span>
+                  <span style="font-size: 13px; color: #1B365D; font-style: italic;">"${item.catatan_penanganan || "Tidak ada catatan."}"</span>
                 </div>
               </div>
             </div>`;
